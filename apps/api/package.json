@@ -11,18 +11,21 @@
     "cf-typegen": "wrangler types",
     "lint": "eslint src",
     "typecheck": "wrangler types && tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
+    "drizzle-orm": "^0.45.4",
     "entitlements": "workspace:*",
     "hono": "^4.13.14"
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "^1.4.9",
+    "drizzle-kit": "^0.31.11",
     "eslint": "^9.39.5",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.72.1",
-    "wrangler": "^4.154.0",
-    "vitest": "^5.0.5"
+    "vitest": "^5.0.5",
+    "wrangler": "^4.154.0"
   }
 }

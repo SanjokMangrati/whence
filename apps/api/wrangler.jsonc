@@ -5,11 +5,14 @@
   "compatibility_date": "2026-10-29",
   "workers_dev": false,
   "preview_urls": false,
+  "d1_databases": [{ "binding": "DB", "database_name": "whence" }],
   "observability": {
     "enabled": true,
     "traces": { "enabled": true },
   },
   "env": {
-    "demo": {},
+    "demo": {
+      "d1_databases": [{ "binding": "DB", "database_name": "whence-demo" }],
+    },
   },
 }
