@@ -31,4 +31,6 @@ const app = new Hono<{ Bindings: Env; Variables: Partial<AppEnv['Variables']> }>
 
 export type AppType = typeof app
 
+export { GenerationWorkflow } from './workflows/generation'
+
 export default app

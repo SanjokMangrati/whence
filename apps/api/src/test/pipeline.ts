@@ -13,7 +13,7 @@ import { generateDrafts } from '../workflows/steps/generate'
 import { insertTestJob, insertTestUser } from './factories'
 import { fakeGenerator } from './generator'
 
-const ARTICLE_HTML = `<!doctype html>
+export const ARTICLE_HTML = `<!doctype html>
 <html><head><title>Spaced repetition</title></head>
 <body><article>
   <h1>Spaced repetition</h1>

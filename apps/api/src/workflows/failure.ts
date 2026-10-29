@@ -24,6 +24,10 @@ const FREE_CODES: DomainErrorCode[] = ['unsupported_source', 'private_address', 
 
 const CODED_MESSAGE = /^(?:\w*Error: )*([a-z_]+): ([\s\S]*)$/
 
+export function isPermanentFailure(code: DomainErrorCode) {
+  return PERMANENT_CODES.has(code)
+}
+
 export async function permanentAware<T>(run: () => Promise<T>): Promise<T> {
   try {
     return await run()
