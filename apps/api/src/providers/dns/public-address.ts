@@ -32,7 +32,7 @@ export async function assertPublicHost(hostname: string): Promise<void> {
   }
 }
 
-export async function fetchPublicUrl(url: string): Promise<Response> {
+export async function fetchPublicUrl(url: string, signal: AbortSignal): Promise<Response> {
   let current = url
 
   for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
@@ -42,7 +42,7 @@ export async function fetchPublicUrl(url: string): Promise<Response> {
     }
     await assertPublicHost(parsed.hostname)
 
-    const response = await fetch(current, { redirect: 'manual' })
+    const response = await fetch(current, { redirect: 'manual', signal })
     if (!REDIRECT_STATUS.has(response.status)) {
       return response
     }

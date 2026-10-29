@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { stubFetch } from '../../test/fetch'
 import { assertPublicHost, fetchPublicUrl } from './public-address'
 
+const NO_DEADLINE = new AbortController().signal
+
 function dnsAnswer(address: string, type: number) {
   return Response.json({ Answer: [{ type, data: address }] })
 }
@@ -66,7 +68,7 @@ describe('public address guard', () => {
       return new Response('reached')
     })
 
-    await expect(fetchPublicUrl('https://example.com/post')).rejects.toMatchObject({
+    await expect(fetchPublicUrl('https://example.com/post', NO_DEADLINE)).rejects.toMatchObject({
       code: 'private_address',
     })
     expect(requests.map((request) => request.url)).not.toContain('http://127.0.0.1/admin')
@@ -80,7 +82,7 @@ describe('public address guard', () => {
       return new Response(null, { status: 302, headers: { location: 'file:///etc/passwd' } })
     })
 
-    await expect(fetchPublicUrl('https://example.com/post')).rejects.toMatchObject({
+    await expect(fetchPublicUrl('https://example.com/post', NO_DEADLINE)).rejects.toMatchObject({
       code: 'private_address',
     })
   })
@@ -95,10 +97,27 @@ describe('public address guard', () => {
       return new Response(null, { status: 301, headers: { location: `/hop-${hop}` } })
     })
 
-    await expect(fetchPublicUrl('https://example.com/post')).rejects.toMatchObject({
+    await expect(fetchPublicUrl('https://example.com/post', NO_DEADLINE)).rejects.toMatchObject({
       code: 'extraction_failed',
     })
     expect(hop).toBe(6)
+  })
+
+  it('passes the signal to the page request', async () => {
+    const controller = new AbortController()
+    stubFetch((request) => {
+      if (request.url.startsWith('https://cloudflare-dns.com')) {
+        return dnsAnswer('93.184.216.34', 1)
+      }
+      return new Promise((_, reject) => {
+        request.signal.addEventListener('abort', () => reject(request.signal.reason))
+        controller.abort(new DOMException('The page is slow.', 'TimeoutError'))
+      })
+    })
+
+    await expect(
+      fetchPublicUrl('https://example.com/post', controller.signal),
+    ).rejects.toMatchObject({ name: 'TimeoutError' })
   })
 
   it('returns the response when every hop is public', async () => {
@@ -112,7 +131,7 @@ describe('public address guard', () => {
       return new Response('reached')
     })
 
-    const response = await fetchPublicUrl('https://example.com/post')
+    const response = await fetchPublicUrl('https://example.com/post', NO_DEADLINE)
     expect(await response.text()).toBe('reached')
   })
 })

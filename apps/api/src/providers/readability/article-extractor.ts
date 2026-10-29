@@ -19,22 +19,38 @@ const PROMO_NAME =
   /(^|[-_\s])(cta|promo|promotion|newsletter|subscribe|advert|advertisement|ads?|sponsor|sponsored)([-_\s]|$)/i
 const MAX_PROMO_CHARS = 600
 
+const PAGE_TIMEOUT_MS = 15_000
+
 export function createReadabilityArticleExtractor(): ArticleExtractor {
   return {
     async extract(url: string): Promise<ExtractedSource> {
-      const response = await fetchPublicUrl(url)
-      if (!response.ok) {
-        throw new DomainError('extraction_failed', `The article URL returned ${response.status}.`)
+      try {
+        return extractFromHtml(await loadHtml(url, AbortSignal.timeout(PAGE_TIMEOUT_MS)), url)
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'TimeoutError') {
+          throw new DomainError(
+            'extraction_failed',
+            `The page did not load within ${PAGE_TIMEOUT_MS / 1000} seconds.`,
+          )
+        }
+        throw error
       }
-
-      const contentType = response.headers.get('content-type') ?? ''
-      if (!contentType.includes('html')) {
-        throw new DomainError('extraction_failed', `The URL serves ${contentType || 'no'} content.`)
-      }
-
-      return extractFromHtml(await readHtmlWithin(response, MAX_HTML_BYTES), url)
     },
   }
+}
+
+async function loadHtml(url: string, signal: AbortSignal): Promise<string> {
+  const response = await fetchPublicUrl(url, signal)
+  if (!response.ok) {
+    throw new DomainError('extraction_failed', `The article URL returned ${response.status}.`)
+  }
+
+  const contentType = response.headers.get('content-type') ?? ''
+  if (!contentType.includes('html')) {
+    throw new DomainError('extraction_failed', `The URL serves ${contentType || 'no'} content.`)
+  }
+
+  return readHtmlWithin(response, MAX_HTML_BYTES)
 }
 
 const MAX_HTML_BYTES = 5 * 1024 * 1024

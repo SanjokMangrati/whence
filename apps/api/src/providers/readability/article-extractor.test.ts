@@ -189,6 +189,20 @@ describe('readability article fetch', () => {
     })
   })
 
+  it('fails when the page stops loading before the deadline', async () => {
+    const stalled = new ReadableStream({
+      pull(controller) {
+        controller.error(new DOMException('The operation timed out.', 'TimeoutError'))
+      },
+    })
+    servePage(new Response(stalled, { headers: { 'content-type': 'text/html' } }))
+
+    await expect(extractor.extract('https://example.com/post')).rejects.toMatchObject({
+      code: 'extraction_failed',
+      message: 'The page did not load within 15 seconds.',
+    })
+  })
+
   it('refuses a page that returns an error status', async () => {
     servePage(new Response('gone', { status: 404, headers: { 'content-type': 'text/html' } }))
 
