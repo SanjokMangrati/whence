@@ -93,6 +93,19 @@ describe('anthropic generator', () => {
     ).rejects.toBeInstanceOf(DomainError)
   })
 
+  it('names the key as the cause when Anthropic rejects it', async () => {
+    stubFetch(() =>
+      Response.json(
+        { type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } },
+        { status: 401 },
+      ),
+    )
+
+    await expect(
+      createAnthropicGenerator(CONFIG).generate({ system: 's', prompt: 'p', maxOutputTokens: 16 }),
+    ).rejects.toMatchObject({ code: 'provider_key_rejected' })
+  })
+
   it('fails when the model refuses after writing some text', async () => {
     stubStream('partial', 'refusal')
 

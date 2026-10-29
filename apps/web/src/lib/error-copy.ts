@@ -69,6 +69,11 @@ const COPY: Record<string, ErrorCopy> = {
     body: 'The demo makes notes with your own key. Add it in Settings, then paste the link again.',
     actions: ['add_key'],
   },
+  provider_key_rejected: {
+    heading: 'Anthropic did not take your key.',
+    body: 'Add a working key in Settings, then paste the link again.',
+    actions: ['add_key'],
+  },
   demo_budget_exhausted: {
     heading: 'The demo budget for this month is used up.',
     body: 'Your notes so far still open. New sources start again next month.',
@@ -181,6 +186,7 @@ const ACTION_COPY: Record<string, string> = {
   unauthorized: 'You are logged out. Log in, then try again.',
   not_found: 'This no longer exists. Reload the page.',
   invalid_request: 'Check what you entered, then try again.',
+  provider_key_rejected: 'Anthropic did not take this key. Check it, then try again.',
   entitlement_required: 'This needs Pro. Your plan is Free.',
   already_subscribed: 'You are on Pro already. Reload the page.',
   no_subscription: 'You have no Pro plan to change. Reload the page.',

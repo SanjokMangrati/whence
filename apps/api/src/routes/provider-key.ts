@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { validator } from 'hono/validator'
 import { createDb } from '../db/client'
 import type { AppEnv } from '../middleware/session'
+import { anthropicKeyWorks } from '../providers/anthropic/key-check'
 import { providerKeyStatus, removeProviderKey, storeProviderKey } from '../services/provider-keys'
 import { requestError } from './errors'
 
@@ -18,11 +19,15 @@ export const providerKey = new Hono<AppEnv>()
     return c.json({ ...status, required: c.env.ANTHROPIC_API_KEY === undefined })
   })
   .put('/', keyBody, async (c) => {
+    const { key } = c.req.valid('json')
+    if (!(await anthropicKeyWorks(key))) {
+      return c.json({ error: 'provider_key_rejected' as const }, 400)
+    }
     const status = await storeProviderKey(
       createDb(c.env.DB),
       c.env.KEY_ENCRYPTION_SECRET,
       c.get('user').id,
-      c.req.valid('json').key,
+      key,
     )
     return c.json(status)
   })

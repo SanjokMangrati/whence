@@ -25,6 +25,9 @@ export function createAnthropicGenerator(config: GeneratorConfig): Generator {
           })
           .finalMessage()
       } catch (error) {
+        if (error instanceof Anthropic.AuthenticationError) {
+          throw new DomainError('provider_key_rejected', 'Anthropic rejected the API key.')
+        }
         const detail = error instanceof Error ? error.message : String(error)
         throw new DomainError('generation_failed', detail)
       }

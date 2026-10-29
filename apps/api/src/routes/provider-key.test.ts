@@ -1,10 +1,12 @@
 import { SELF } from 'cloudflare:test'
 import { env } from 'cloudflare:workers'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import app from '../index'
+import { stubFetch } from '../test/fetch'
 import { signUp } from '../test/session'
 
 const KEY = 'sk-ant-api03-visitor-key-for-tests-only-AbCd'
+const ANTHROPIC = 'https://api.anthropic.com/'
 
 function call(cookie: string, method: string, body?: object) {
   return SELF.fetch('https://example.com/api/me/provider-key', {
@@ -15,6 +17,12 @@ function call(cookie: string, method: string, body?: object) {
 }
 
 describe('provider key routes', () => {
+  let anthropicRequests: Request[]
+
+  beforeEach(() => {
+    anthropicRequests = stubFetch(() => Response.json({ data: [], has_more: false }))
+  })
+
   it('saves a key and answers with its last four characters only', async () => {
     const { cookie } = await signUp()
 
@@ -26,6 +34,24 @@ describe('provider key routes', () => {
     expect(JSON.parse(savedText)).toEqual({ set: true, last4: 'AbCd' })
     expect(JSON.parse(readText)).toEqual({ set: true, last4: 'AbCd', required: true })
     expect(savedText + readText).not.toContain('visitor-key')
+    const checks = anthropicRequests.filter((request) => request.url.startsWith(ANTHROPIC))
+    expect(checks.map((request) => request.headers.get('authorization'))).toEqual([`Bearer ${KEY}`])
+  })
+
+  it('refuses a key that Anthropic rejects', async () => {
+    const { cookie } = await signUp()
+    stubFetch(() =>
+      Response.json(
+        { type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } },
+        { status: 401 },
+      ),
+    )
+
+    const response = await call(cookie, 'PUT', { key: KEY })
+
+    expect(response.status).toBe(400)
+    expect(await response.json()).toEqual({ error: 'provider_key_rejected' })
+    expect(await (await call(cookie, 'GET')).json()).toMatchObject({ set: false })
   })
 
   it('shows no key to another user', async () => {

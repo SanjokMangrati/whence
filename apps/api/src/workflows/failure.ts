@@ -21,6 +21,7 @@ const PERMANENT_CODES = new Set<DomainErrorCode>([
   'source_too_long',
   'captions_unavailable',
   'provider_key_required',
+  'provider_key_rejected',
   'verification_failed',
   'too_many_claims',
   'demo_budget_exhausted',

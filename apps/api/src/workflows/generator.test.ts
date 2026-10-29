@@ -54,7 +54,7 @@ describe('generator for a job', () => {
     const error = await generator.generate(REQUEST).catch((caught: unknown) => caught)
     await createPostHogErrorReporter({ apiKey: '', host: '' }).report(error, { where: 'test' })
 
-    expect(error).toMatchObject({ code: 'generation_failed' })
+    expect(error).toMatchObject({ code: 'provider_key_rejected' })
     expect(logged).toHaveBeenCalled()
     const output = logged.mock.calls
       .flat()

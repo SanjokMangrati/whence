@@ -5,6 +5,7 @@ export const DOMAIN_ERROR_CODES = [
   'captions_unavailable',
   'extraction_failed',
   'provider_key_required',
+  'provider_key_rejected',
   'generation_failed',
   'verifier_request_failed',
   'verification_failed',
