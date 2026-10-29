@@ -1,0 +1,389 @@
+{
+  "jobId": "f1ecf395-92ea-466d-a8c0-b5bed3346a37",
+  "source": {
+    "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+    "url": "https://www.youtube.com/watch?v=wjZofJX0v4M",
+    "sourceType": "video",
+    "lengthMs": 1634000
+  },
+  "spans": [
+    {
+      "id": "1501219c-7212-47a0-9fce-a40ba3033a78",
+      "ordinal": 25,
+      "startMs": 199080,
+      "endMs": 206220,
+      "text": "First, the input is broken up into a bunch of little pieces."
+    },
+    {
+      "id": "169a49c1-8cd9-486e-8860-e327ee4bcf17",
+      "ordinal": 26,
+      "startMs": 199080,
+      "endMs": 210365,
+      "text": "These pieces are called tokens, and in the case of text these tend to be words or little pieces of words or other common character combinations."
+    },
+    {
+      "id": "a8f22f90-098c-49b3-be20-b7f7ff433d39",
+      "ordinal": 27,
+      "startMs": 210424,
+      "endMs": 217080,
+      "text": "If images or sound are involved, then tokens could be little patches of that image or little chunks of that sound."
+    },
+    {
+      "id": "c92a5d65-91cf-4ca8-bc26-654330237466",
+      "ordinal": 28,
+      "startMs": 217580,
+      "endMs": 225360,
+      "text": "Each one of these tokens is then associated with a vector, meaning some list of numbers, which is meant to somehow encode the meaning of that piece."
+    },
+    {
+      "id": "32688758-f400-49db-840f-765f2e3bb2f2",
+      "ordinal": 29,
+      "startMs": 225880,
+      "endMs": 234680,
+      "text": "If you think of these vectors as giving coordinates in some very high dimensional space, words with similar meanings tend to land on vectors that are close to each other in that space."
+    },
+    {
+      "id": "4451f320-c1bc-4d19-afeb-07813db060b8",
+      "ordinal": 30,
+      "startMs": 235280,
+      "endMs": 244707,
+      "text": "This sequence of vectors then passes through an operation that's known as an attention block, and this allows the vectors to talk to each other and pass information back and forth to update their values."
+    },
+    {
+      "id": "3370a7d5-447e-4d8d-83f6-c7bcc88fbba7",
+      "ordinal": 31,
+      "startMs": 244756,
+      "endMs": 257071,
+      "text": "For example, the meaning of the word model in the phrase \"a machine learning model\" is different from its meaning in the phrase \"a fashion model\"."
+    },
+    {
+      "id": "b4e76e78-20eb-4d44-9b3e-27f99fc8da34",
+      "ordinal": 32,
+      "startMs": 251734,
+      "endMs": 262293,
+      "text": "The attention block is what's responsible for figuring out which words in context are relevant to updating the meanings of which other words, and how exactly those meanings should be updated."
+    },
+    {
+      "id": "83e0ef6c-a6a9-4d33-9228-cd10bd06ef1f",
+      "ordinal": 33,
+      "startMs": 262347,
+      "endMs": 268040,
+      "text": "And again, whenever I use the word meaning, this is somehow entirely encoded in the entries of those vectors."
+    },
+    {
+      "id": "9d095449-f999-4221-b580-8f1a7a979afe",
+      "ordinal": 34,
+      "startMs": 269180,
+      "endMs": 278179,
+      "text": "After that, these vectors pass through a different kind of operation, and depending on the source that you're reading this will be referred to as a multi-layer perceptron or maybe a feed-forward layer."
+    },
+    {
+      "id": "3f791f58-be0b-4dc8-ab54-7daa97529004",
+      "ordinal": 35,
+      "startMs": 278224,
+      "endMs": 282660,
+      "text": "And here the vectors don't talk to each other, they all go through the same operation in parallel."
+    },
+    {
+      "id": "9b834c6f-d4c5-4b08-a1c5-da314e7183e8",
+      "ordinal": 36,
+      "startMs": 283060,
+      "endMs": 294880,
+      "text": "And while this block is a little bit harder to interpret, later on we'll talk about how the step is a little bit like asking a long list of questions about each vector, and then updating them based on the answers to those questions."
+    },
+    {
+      "id": "2c839e97-52e3-427e-91db-fa142752ccba",
+      "ordinal": 37,
+      "startMs": 294937,
+      "endMs": 305320,
+      "text": "All of the operations in both of these blocks look like a giant pile of matrix multiplications, and our primary job is going to be to understand how to read the underlying matrices."
+    },
+    {
+      "id": "cd269419-4714-4b2a-9aa1-34dc00854351",
+      "ordinal": 38,
+      "startMs": 306980,
+      "endMs": 313731,
+      "text": "I'm glossing over some details about some normalization steps that happen in between, but this is after all a high-level preview."
+    },
+    {
+      "id": "58a6f09c-c884-441c-9859-8d08f7096b87",
+      "ordinal": 39,
+      "startMs": 313783,
+      "endMs": 328618,
+      "text": "After that, the process essentially repeats, you go back and forth between attention blocks and multi-layer perceptron blocks, until at the very end the hope is that all of the essential meaning of the passage has somehow been baked into the very last vector in the sequence."
+    },
+    {
+      "id": "6f14a3f0-7512-4020-a3fd-b07ce17ea7c9",
+      "ordinal": 40,
+      "startMs": 328674,
+      "endMs": 338566,
+      "text": "We then perform a certain operation on that last vector that produces a probability distribution over all possible tokens, all possible little chunks of text that might come next."
+    },
+    {
+      "id": "fcb7281a-35f5-436f-895e-ae2ac975adbf",
+      "ordinal": 41,
+      "startMs": 338621,
+      "endMs": 353437,
+      "text": "And like I said, once you have a tool that predicts what comes next given a snippet of text, you can feed it a little bit of seed text and have it repeatedly play this game of predicting what comes next, sampling from the distribution, appending it, and then repeating over and over."
+    },
+    {
+      "id": "d33068ea-f9fd-4d88-9aab-ac1ebb16d43c",
+      "ordinal": 83,
+      "startMs": 795100,
+      "endMs": 802360,
+      "text": "We label it W_E, and like all the matrices we see, its values begin random, but they're going to be learned based on data."
+    },
+    {
+      "id": "825f080a-e1a9-4ca3-b55a-94410cf44ec9",
+      "ordinal": 87,
+      "startMs": 832592,
+      "endMs": 840157,
+      "text": "In GPT-3 they have 12,288 dimensions, and as you'll see, it matters to work in a space that has a lot of distinct directions."
+    },
+    {
+      "id": "3ebaf170-3fcd-40ba-b28a-8a32588f5d5d",
+      "ordinal": 112,
+      "startMs": 1080030,
+      "endMs": 1097340,
+      "text": "Using the GPT-3 numbers, the vocabulary size specifically is 50,257, and again, technically this consists not of words per se, but of tokens."
+    },
+    {
+      "id": "cc15ccfe-1a3d-4bda-8bfe-62bf72928d10",
+      "ordinal": 113,
+      "startMs": 1089694,
+      "endMs": 1097340,
+      "text": "The embedding dimension is 12,288, and multiplying those tells us this consists of about 617 million weights."
+    }
+  ],
+  "notes": {
+    "markdown": "## Transformer architecture stages\n- A sequence of vectors passes through an attention block, which allows vectors to talk to each other and pass information back and forth to update their values.[^23]\n- The attention block figures out which words in context are relevant to updating the meanings of which other words and how those meanings should be updated.[^24][^25]\n- Vectors pass through a multi-layer perceptron or feed-forward layer where vectors do not talk to each other but all go through the same operation in parallel.[^26][^27]\n- A feed-forward layer is like asking a long list of questions about each vector and then updating them based on the answers to those questions.[^28]\n- Operations in attention blocks and multi-layer perceptron blocks look like a giant pile of matrix multiplications.[^29]\n- The transformer alternates between attention blocks and multi-layer perceptron blocks, repeating this process until the essential meaning of the passage is baked into the very last vector.[^30]\n- An operation on the last vector produces a probability distribution over all possible tokens that might come next.[^31]\n",
+    "citations": [
+      {
+        "id": "e86455c9-0d96-4753-a87b-d97d425a2878",
+        "ordinal": 22,
+        "spanId": "4451f320-c1bc-4d19-afeb-07813db060b8",
+        "spanOrdinal": 30,
+        "startMs": 235280,
+        "endMs": 244707,
+        "charStart": 4255,
+        "charEnd": 4458,
+        "text": "This sequence of vectors then passes through an operation that's known as an attention block, and this allows the vectors to talk to each other and pass information back and forth to update their values."
+      },
+      {
+        "id": "2a15e840-9cb1-47fa-a3e3-cb2d821bcf2a",
+        "ordinal": 23,
+        "spanId": "3370a7d5-447e-4d8d-83f6-c7bcc88fbba7",
+        "spanOrdinal": 31,
+        "startMs": 244756,
+        "endMs": 257071,
+        "charStart": 4459,
+        "charEnd": 4605,
+        "text": "For example, the meaning of the word model in the phrase \"a machine learning model\" is different from its meaning in the phrase \"a fashion model\"."
+      },
+      {
+        "id": "66195f93-485e-498e-8b75-f4ff2bcf47f3",
+        "ordinal": 24,
+        "spanId": "b4e76e78-20eb-4d44-9b3e-27f99fc8da34",
+        "spanOrdinal": 32,
+        "startMs": 251734,
+        "endMs": 262293,
+        "charStart": 4606,
+        "charEnd": 4797,
+        "text": "The attention block is what's responsible for figuring out which words in context are relevant to updating the meanings of which other words, and how exactly those meanings should be updated."
+      },
+      {
+        "id": "08520694-246e-4459-acaf-6b6b5d8a4caf",
+        "ordinal": 25,
+        "spanId": "9d095449-f999-4221-b580-8f1a7a979afe",
+        "spanOrdinal": 34,
+        "startMs": 269180,
+        "endMs": 278179,
+        "charStart": 4908,
+        "charEnd": 5109,
+        "text": "After that, these vectors pass through a different kind of operation, and depending on the source that you're reading this will be referred to as a multi-layer perceptron or maybe a feed-forward layer."
+      },
+      {
+        "id": "4227e0cf-fee5-4b43-bd94-8121387906f9",
+        "ordinal": 26,
+        "spanId": "3f791f58-be0b-4dc8-ab54-7daa97529004",
+        "spanOrdinal": 35,
+        "startMs": 278224,
+        "endMs": 282660,
+        "charStart": 5110,
+        "charEnd": 5208,
+        "text": "And here the vectors don't talk to each other, they all go through the same operation in parallel."
+      },
+      {
+        "id": "8413ead7-3137-4c6a-8240-27d21849c748",
+        "ordinal": 27,
+        "spanId": "9b834c6f-d4c5-4b08-a1c5-da314e7183e8",
+        "spanOrdinal": 36,
+        "startMs": 283060,
+        "endMs": 294880,
+        "charStart": 5209,
+        "charEnd": 5441,
+        "text": "And while this block is a little bit harder to interpret, later on we'll talk about how the step is a little bit like asking a long list of questions about each vector, and then updating them based on the answers to those questions."
+      },
+      {
+        "id": "995c9c16-263c-46ec-8297-5cf1c2a14904",
+        "ordinal": 28,
+        "spanId": "2c839e97-52e3-427e-91db-fa142752ccba",
+        "spanOrdinal": 37,
+        "startMs": 294937,
+        "endMs": 305320,
+        "charStart": 5442,
+        "charEnd": 5623,
+        "text": "All of the operations in both of these blocks look like a giant pile of matrix multiplications, and our primary job is going to be to understand how to read the underlying matrices."
+      },
+      {
+        "id": "3088fe4a-3f17-42b3-8c59-96d512a9c7ee",
+        "ordinal": 29,
+        "spanId": "58a6f09c-c884-441c-9859-8d08f7096b87",
+        "spanOrdinal": 39,
+        "startMs": 313783,
+        "endMs": 328618,
+        "charStart": 5754,
+        "charEnd": 6029,
+        "text": "After that, the process essentially repeats, you go back and forth between attention blocks and multi-layer perceptron blocks, until at the very end the hope is that all of the essential meaning of the passage has somehow been baked into the very last vector in the sequence."
+      },
+      {
+        "id": "405a97c9-d371-4c64-bfc1-07bbe1bf08e5",
+        "ordinal": 30,
+        "spanId": "6f14a3f0-7512-4020-a3fd-b07ce17ea7c9",
+        "spanOrdinal": 40,
+        "startMs": 328674,
+        "endMs": 338566,
+        "charStart": 6030,
+        "charEnd": 6209,
+        "text": "We then perform a certain operation on that last vector that produces a probability distribution over all possible tokens, all possible little chunks of text that might come next."
+      }
+    ]
+  },
+  "cheatSheet": {
+    "markdown": "## Embedding matrix\n- Embedding matrix label: W_E.[^51]\n- Embedding matrix values: Begin random but are learned during training.[^52]\n- GPT-3 vocabulary size: 50,257 tokens.[^53]\n- GPT-3 embedding dimension: 12,288 dimensions.[^54][^55]\n- Embedding matrix parameters: About 617 million weights.[^56]\n",
+    "citations": [
+      {
+        "id": "8ffb984c-622f-4d49-9d8c-fe60b169fc96",
+        "ordinal": 50,
+        "spanId": "d33068ea-f9fd-4d88-9aab-ac1ebb16d43c",
+        "spanOrdinal": 83,
+        "startMs": 795100,
+        "endMs": 802360,
+        "charStart": 14540,
+        "charEnd": 14662,
+        "text": "We label it W_E, and like all the matrices we see, its values begin random, but they're going to be learned based on data."
+      },
+      {
+        "id": "22053fec-25b1-40d0-bee3-115b169ccd74",
+        "ordinal": 51,
+        "spanId": "d33068ea-f9fd-4d88-9aab-ac1ebb16d43c",
+        "spanOrdinal": 83,
+        "startMs": 795100,
+        "endMs": 802360,
+        "charStart": 14540,
+        "charEnd": 14662,
+        "text": "We label it W_E, and like all the matrices we see, its values begin random, but they're going to be learned based on data."
+      },
+      {
+        "id": "18cecd50-29e4-4bdc-a443-90ceb9382b68",
+        "ordinal": 52,
+        "spanId": "3ebaf170-3fcd-40ba-b28a-8a32588f5d5d",
+        "spanOrdinal": 112,
+        "startMs": 1080030,
+        "endMs": 1097340,
+        "charStart": 19568,
+        "charEnd": 19709,
+        "text": "Using the GPT-3 numbers, the vocabulary size specifically is 50,257, and again, technically this consists not of words per se, but of tokens."
+      },
+      {
+        "id": "85d1022c-301f-4bae-834a-647efaa13e40",
+        "ordinal": 53,
+        "spanId": "825f080a-e1a9-4ca3-b55a-94410cf44ec9",
+        "spanOrdinal": 87,
+        "startMs": 832592,
+        "endMs": 840157,
+        "charStart": 15214,
+        "charEnd": 15339,
+        "text": "In GPT-3 they have 12,288 dimensions, and as you'll see, it matters to work in a space that has a lot of distinct directions."
+      },
+      {
+        "id": "fef6490d-946b-435c-9344-b5b4ea221201",
+        "ordinal": 54,
+        "spanId": "cc15ccfe-1a3d-4bda-8bfe-62bf72928d10",
+        "spanOrdinal": 113,
+        "startMs": 1089694,
+        "endMs": 1097340,
+        "charStart": 19710,
+        "charEnd": 19819,
+        "text": "The embedding dimension is 12,288, and multiplying those tells us this consists of about 617 million weights."
+      },
+      {
+        "id": "1aa9a4dc-a561-4611-84eb-3af6d3a9cec2",
+        "ordinal": 55,
+        "spanId": "cc15ccfe-1a3d-4bda-8bfe-62bf72928d10",
+        "spanOrdinal": 113,
+        "startMs": 1089694,
+        "endMs": 1097340,
+        "charStart": 19710,
+        "charEnd": 19819,
+        "text": "The embedding dimension is 12,288, and multiplying those tells us this consists of about 617 million weights."
+      }
+    ]
+  },
+  "question": {
+    "question": "How does the attention block differ from the multi-layer perceptron block in how they process vectors?",
+    "answer": "Attention blocks allow vectors to update each other based on context relevance, while feed-forward layers apply the same operation to all vectors independently without interaction.",
+    "citations": [
+      {
+        "id": "c29984f2-d706-4065-8e93-90d5933065e6",
+        "ordinal": 0,
+        "spanId": "4451f320-c1bc-4d19-afeb-07813db060b8",
+        "spanOrdinal": 30,
+        "startMs": 235280,
+        "endMs": 244707,
+        "charStart": 4255,
+        "charEnd": 4458,
+        "text": "This sequence of vectors then passes through an operation that's known as an attention block, and this allows the vectors to talk to each other and pass information back and forth to update their values."
+      },
+      {
+        "id": "68fd6ee3-a5cc-445a-8c56-3e1b9307fbe5",
+        "ordinal": 1,
+        "spanId": "b4e76e78-20eb-4d44-9b3e-27f99fc8da34",
+        "spanOrdinal": 32,
+        "startMs": 251734,
+        "endMs": 262293,
+        "charStart": 4606,
+        "charEnd": 4797,
+        "text": "The attention block is what's responsible for figuring out which words in context are relevant to updating the meanings of which other words, and how exactly those meanings should be updated."
+      },
+      {
+        "id": "53a3f002-83d3-4310-995c-050adf81772d",
+        "ordinal": 2,
+        "spanId": "9d095449-f999-4221-b580-8f1a7a979afe",
+        "spanOrdinal": 34,
+        "startMs": 269180,
+        "endMs": 278179,
+        "charStart": 4908,
+        "charEnd": 5109,
+        "text": "After that, these vectors pass through a different kind of operation, and depending on the source that you're reading this will be referred to as a multi-layer perceptron or maybe a feed-forward layer."
+      },
+      {
+        "id": "0114e463-7963-4fc9-a4da-1de5c63ce1d7",
+        "ordinal": 3,
+        "spanId": "3f791f58-be0b-4dc8-ab54-7daa97529004",
+        "spanOrdinal": 35,
+        "startMs": 278224,
+        "endMs": 282660,
+        "charStart": 5110,
+        "charEnd": 5208,
+        "text": "And here the vectors don't talk to each other, they all go through the same operation in parallel."
+      }
+    ]
+  },
+  "moreQuestions": [
+    "What form does a language model's prediction take, and how does a model use this prediction to generate longer text?",
+    "Why might early versions of ChatGPT lose the thread of a long conversation?",
+    "What effect does increasing the temperature parameter have on softmax's output distribution?"
+  ],
+  "reviewOffsetsDays": [1, 7, 22, 60]
+}

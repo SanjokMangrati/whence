@@ -1,0 +1,1411 @@
+{
+  "jobId": "736edc26-d004-4b5b-ae15-5be77b84259d",
+  "source": {
+    "title": "Distributed Systems 5.1: Replication",
+    "url": "https://www.youtube.com/watch?v=mBUCF1WGI_I",
+    "sourceType": "video",
+    "lengthMs": 1521000
+  },
+  "spans": [
+    {
+      "id": "5abb17b2-773b-42da-b6bb-6ce44da347bc",
+      "ordinal": 230,
+      "startMs": 1169120,
+      "endMs": 1177760,
+      "text": "Because that's the granularity at which we're going to do that reconciliation."
+    },
+    {
+      "id": "8270f663-4945-42e7-abc3-aae01cde1d50",
+      "ordinal": 231,
+      "startMs": 1172320,
+      "endMs": 1180960,
+      "text": "Now what kind of logical timestamps do we use here?"
+    },
+    {
+      "id": "467dcdc6-7fa4-47f5-9673-89bf422530aa",
+      "ordinal": 232,
+      "startMs": 1177760,
+      "endMs": 1187440,
+      "text": "So in our last lecture we saw the distinction between lampwork clocks and vector clocks."
+    },
+    {
+      "id": "8281b9ce-e521-4737-83ab-2420bb22134a",
+      "ordinal": 233,
+      "startMs": 1183039,
+      "endMs": 1193200,
+      "text": "And in fact we can use both in databases and we get slightly different behavior."
+    },
+    {
+      "id": "26f7a6ef-e6fc-4dc9-8cde-b1dd55380878",
+      "ordinal": 234,
+      "startMs": 1189440,
+      "endMs": 1195679,
+      "text": "So it really depends what behavior we want."
+    },
+    {
+      "id": "8d3297ec-c20b-490c-9957-4b50f92d455a",
+      "ordinal": 235,
+      "startMs": 1193200,
+      "endMs": 1204799,
+      "text": "And this becomes apparent if we consider two clients that are making rights to this replicated database concurrently."
+    },
+    {
+      "id": "5cf038e4-3625-4cab-920e-94309b1ee29f",
+      "ordinal": 236,
+      "startMs": 1200160,
+      "endMs": 1211840,
+      "text": "So here on client one client one wants to update the value that is associated with some key x."
+    },
+    {
+      "id": "e8b94609-ca46-4e73-9f98-6f6dac35e3ae",
+      "ordinal": 237,
+      "startMs": 1208480,
+      "endMs": 1216480,
+      "text": "So x is the key v1 is the value that client one wants to attach to x."
+    },
+    {
+      "id": "04e20db2-43dd-49ad-87ae-8aea5b3a9d58",
+      "ordinal": 238,
+      "startMs": 1211840,
+      "endMs": 1220799,
+      "text": "And this operation is going to have a logical timestamp of t1."
+    },
+    {
+      "id": "d10a9fbd-66b7-47c9-b81d-78ed240a4b54",
+      "ordinal": 239,
+      "startMs": 1218720,
+      "endMs": 1230000,
+      "text": "Concurrently while this is happening client two also wants to set the value of x since it wants to set it to a different value b2."
+    },
+    {
+      "id": "dd00b50d-63de-4a61-8660-ceca53666dee",
+      "ordinal": 240,
+      "startMs": 1227520,
+      "endMs": 1239120,
+      "text": "So client ones also generates a logical timestamp t2 um sends an operation of the network attached he attaches t2 to this operation."
+    },
+    {
+      "id": "e7dffa56-0937-4fcc-9e70-a43abf2752d6",
+      "ordinal": 241,
+      "startMs": 1234880,
+      "endMs": 1242799,
+      "text": "The operation is i want to set the key x to the value v2."
+    },
+    {
+      "id": "6878e523-84ee-4d72-9f4c-6294717cce3a",
+      "ordinal": 242,
+      "startMs": 1239120,
+      "endMs": 1251200,
+      "text": "Now notice that replica a first receives the request from client to second receives the request from client one."
+    },
+    {
+      "id": "68bd4afe-be9f-45cd-8d5e-afda0178566b",
+      "ordinal": 243,
+      "startMs": 1249280,
+      "endMs": 1255039,
+      "text": "Whereas replica b receives them in the opposite order."
+    },
+    {
+      "id": "eaadfee8-b63c-4f5f-8568-a9fbe913f83c",
+      "ordinal": 244,
+      "startMs": 1251200,
+      "endMs": 1260000,
+      "text": "Replica b first receives uh the request from client one then the request from client two."
+    },
+    {
+      "id": "1423df8e-517c-4fd4-a54a-c6c7a485969d",
+      "ordinal": 245,
+      "startMs": 1256080,
+      "endMs": 1264480,
+      "text": "So this means the replicas can't just use the order in which they see the requests."
+    },
+    {
+      "id": "aa346d96-886c-47ab-93c3-23858915f5c1",
+      "ordinal": 246,
+      "startMs": 1261600,
+      "endMs": 1268159,
+      "text": "In order to determine whether v1 or v2 is the final value for x."
+    },
+    {
+      "id": "1d81e9a5-9dbd-4f8c-a053-dc6f4bd3a206",
+      "ordinal": 247,
+      "startMs": 1266480,
+      "endMs": 1275120,
+      "text": "Because if they did just use the order in which the requests arrive then they would end up in different states."
+    },
+    {
+      "id": "0ed7643c-5808-4bda-896d-f1641714c726",
+      "ordinal": 248,
+      "startMs": 1271360,
+      "endMs": 1276240,
+      "text": "They would end up inconsistent at the end."
+    },
+    {
+      "id": "0cc254c8-b2ce-405f-8954-fc884f8f3a88",
+      "ordinal": 249,
+      "startMs": 1273120,
+      "endMs": 1280640,
+      "text": "And so what we want in a replicated system is that all of the replicas end up being in the same state."
+    },
+    {
+      "id": "bbe83d70-301d-4470-8ac1-f8a82f736ff0",
+      "ordinal": 250,
+      "startMs": 1277919,
+      "endMs": 1281840,
+      "text": "Otherwise it's not a replication."
+    },
+    {
+      "id": "fbe5b62b-f3a4-485c-9b19-1ab16d93c220",
+      "ordinal": 251,
+      "startMs": 1280640,
+      "endMs": 1284720,
+      "text": "And that's why we need to use the timestamps here."
+    },
+    {
+      "id": "03ad6a86-adf2-4c3a-869b-251cd43cae4a",
+      "ordinal": 252,
+      "startMs": 1281840,
+      "endMs": 1290720,
+      "text": "Because the timestamps provide a relative ordering of these two operations."
+    },
+    {
+      "id": "0e958244-66fd-49e4-81fe-57a5c9488ecb",
+      "ordinal": 253,
+      "startMs": 1288240,
+      "endMs": 1294080,
+      "text": "Now one option is that we use lan port clocks."
+    },
+    {
+      "id": "0253865f-6761-48ca-a179-29dff15b1685",
+      "ordinal": 254,
+      "startMs": 1290720,
+      "endMs": 1298159,
+      "text": "And if you remember what we have with lan port clocks is they give us a total ordering."
+    },
+    {
+      "id": "0b6e9fde-1e7d-4bff-bffd-831a093d14b0",
+      "ordinal": 255,
+      "startMs": 1296080,
+      "endMs": 1302640,
+      "text": "So total ordering means that for any two time stamps that exist in the system we can always compare them."
+    },
+    {
+      "id": "bfa28927-0ce0-4746-8079-5206841e33bd",
+      "ordinal": 256,
+      "startMs": 1300159,
+      "endMs": 1306720,
+      "text": "And it will always be the case that one is less than the other."
+    },
+    {
+      "id": "5e9deda2-4e5c-40a8-a415-3108b89b123c",
+      "ordinal": 257,
+      "startMs": 1302640,
+      "endMs": 1311840,
+      "text": "And so in this case for example we can say that t1 is less than two than t2."
+    },
+    {
+      "id": "e6d54079-6bc7-496e-966d-45a8cd4941f1",
+      "ordinal": 258,
+      "startMs": 1310400,
+      "endMs": 1315120,
+      "text": "But it might just as well be the other way around."
+    },
+    {
+      "id": "8ffcf68c-a864-4e5c-8d2d-7d5788eec0c0",
+      "ordinal": 259,
+      "startMs": 1311840,
+      "endMs": 1317440,
+      "text": "Because in this case the two operations are concurrent."
+    },
+    {
+      "id": "96cc2e9b-9301-44f1-9433-a1d6d0703646",
+      "ordinal": 260,
+      "startMs": 1315120,
+      "endMs": 1325120,
+      "text": "And so the ordering that the lampport timestamps provide us is arbitrary essentially."
+    },
+    {
+      "id": "929fdd3b-45d8-49b8-b8a1-1ff0289f15b5",
+      "ordinal": 261,
+      "startMs": 1318640,
+      "endMs": 1330080,
+      "text": "And so what we can do here for example is that we compare t1 and t2."
+    },
+    {
+      "id": "5ef8fbd5-b0b1-4696-b197-279771b10910",
+      "ordinal": 262,
+      "startMs": 1326960,
+      "endMs": 1334640,
+      "text": "And we just keep the the version the the value with the higher timestamp."
+    },
+    {
+      "id": "57dd83a8-d182-4eec-b4af-ce61317dfdcc",
+      "ordinal": 263,
+      "startMs": 1330799,
+      "endMs": 1342799,
+      "text": "And this will work because then as the value gets overwritten we know that the overwrite happens after a previous operation."
+    },
+    {
+      "id": "c7a0260a-ca7b-4f81-a7f4-0e53458f31cc",
+      "ordinal": 264,
+      "startMs": 1339760,
+      "endMs": 1345200,
+      "text": "And therefore it will always have a greater timestamp."
+    },
+    {
+      "id": "eac60cda-1590-48a2-b61f-81f85ff916e5",
+      "ordinal": 265,
+      "startMs": 1342799,
+      "endMs": 1351760,
+      "text": "So therefore overwriting a smaller timestamp with a greater timestamp is a fine thing."
+    },
+    {
+      "id": "28ece56f-8542-44f7-a42d-9a4be711b8cd",
+      "ordinal": 266,
+      "startMs": 1346880,
+      "endMs": 1351760,
+      "text": "You can do that."
+    },
+    {
+      "id": "879cf406-cc3d-4594-b710-03cd0f556477",
+      "ordinal": 267,
+      "startMs": 1346880,
+      "endMs": 1354480,
+      "text": "And this behavior is called last writer wins."
+    },
+    {
+      "id": "42e8dc0b-cb68-40fe-9953-9ef569a9fa8e",
+      "ordinal": 268,
+      "startMs": 1351760,
+      "endMs": 1359200,
+      "text": "Because we assume that the last one the last writer is the one with the highest timestamp."
+    },
+    {
+      "id": "b8fc53a3-841d-40bc-94f9-3f9526010e98",
+      "ordinal": 269,
+      "startMs": 1357200,
+      "endMs": 1361200,
+      "text": "And so the highest timestamp wins."
+    },
+    {
+      "id": "469fe6c3-bfa8-4d8d-9390-c5fdb2b3beb3",
+      "ordinal": 270,
+      "startMs": 1357200,
+      "endMs": 1365039,
+      "text": "If there are several concurrent updates with different timestamps."
+    },
+    {
+      "id": "d9ea7bf5-81a7-4661-a50b-f116cdb17100",
+      "ordinal": 271,
+      "startMs": 1361200,
+      "endMs": 1372880,
+      "text": "Note however that this means that if say t2 is greater than t1 this means we keep v2 which was written by client2."
+    },
+    {
+      "id": "43b707f5-9264-4d71-aa50-ef548b074d02",
+      "ordinal": 272,
+      "startMs": 1368720,
+      "endMs": 1376559,
+      "text": "And we simply discard v1."
+    },
+    {
+      "id": "74e5deec-e6f8-4e95-a499-3efaf76a120e",
+      "ordinal": 273,
+      "startMs": 1372880,
+      "endMs": 1378720,
+      "text": "So value v1 is simply gone."
+    },
+    {
+      "id": "25d373a4-3027-4029-a870-f331ac9a5d01",
+      "ordinal": 274,
+      "startMs": 1372880,
+      "endMs": 1380880,
+      "text": "So we're not even storing that value anywhere."
+    },
+    {
+      "id": "8872f338-1a3c-4112-ba6e-19ac25d69d55",
+      "ordinal": 275,
+      "startMs": 1376559,
+      "endMs": 1382799,
+      "text": "It simply gets overwritten and forgotten."
+    },
+    {
+      "id": "f7e340a6-f2ea-4d66-87df-28b153029b1d",
+      "ordinal": 276,
+      "startMs": 1380880,
+      "endMs": 1385200,
+      "text": "And this might be okay depending on the application."
+    },
+    {
+      "id": "aa5a3a4e-b799-45e8-864f-2b3ad8708c4d",
+      "ordinal": 277,
+      "startMs": 1382799,
+      "endMs": 1392000,
+      "text": "There might be applications in which actually if they're too concurrent rights it's fine to just keep one and throw away the others."
+    },
+    {
+      "id": "2de59564-929e-4b4a-995d-3817373056ff",
+      "ordinal": 278,
+      "startMs": 1388960,
+      "endMs": 1398000,
+      "text": "If there are five concurrent rights we're going to keep one and throw away four of them."
+    },
+    {
+      "id": "e08a2f7b-6f7a-4695-81e6-9b57cc9e23a9",
+      "ordinal": 279,
+      "startMs": 1393600,
+      "endMs": 1402960,
+      "text": "But there might also be a scenarios in which actually if there are several concurrent rights we want to keep all of them."
+    },
+    {
+      "id": "a70b76a0-d5c7-4dfd-897a-c301a9a3428b",
+      "ordinal": 280,
+      "startMs": 1400720,
+      "endMs": 1406080,
+      "text": "And we want to explicitly resolve this situation."
+    },
+    {
+      "id": "4b3039cf-8ef6-490b-8e95-095b90ebfa80",
+      "ordinal": 281,
+      "startMs": 1403919,
+      "endMs": 1410720,
+      "text": "And if we want that well we use a vector clock instead of a lan port clock."
+    },
+    {
+      "id": "a0b2ef7f-79f4-4faa-b98a-024628f3cff7",
+      "ordinal": 282,
+      "startMs": 1407919,
+      "endMs": 1422240,
+      "text": "If we use a vector clock then if we generate two different timestamps t1 and t2 and these two operations are concurrent then the vector clocks will also be incomparable."
+    },
+    {
+      "id": "78992b77-c868-46dd-a04c-24cf12ab4d37",
+      "ordinal": 283,
+      "startMs": 1417200,
+      "endMs": 1423600,
+      "text": "We will end up with t1 and t2 being incomparable."
+    },
+    {
+      "id": "41e6d8c4-64b8-4676-8f06-1c86e914b870",
+      "ordinal": 284,
+      "startMs": 1419440,
+      "endMs": 1431200,
+      "text": "And this allows us to detect the fact that these two operations are concurrent."
+    },
+    {
+      "id": "30aad08d-a0fd-4d9c-ab19-a4632c3448da",
+      "ordinal": 285,
+      "startMs": 1425520,
+      "endMs": 1442320,
+      "text": "And so in this case now we will only overwrite one value with another value if there are vector timestamps uh are the later ones strictly greater than the earlier one."
+    },
+    {
+      "id": "1b6582d8-3df5-4d99-9c35-92b30f8889a8",
+      "ordinal": 286,
+      "startMs": 1440080,
+      "endMs": 1447919,
+      "text": "Under the strictly greater than relation that we've defined previously."
+    },
+    {
+      "id": "29392eef-de9f-4084-93ec-4e79a4ccf3e1",
+      "ordinal": 287,
+      "startMs": 1445279,
+      "endMs": 1451360,
+      "text": "But if we have two concurrent updates then we will keep both of them."
+    },
+    {
+      "id": "9615cd55-38de-45c2-bd07-28f1d59bf719",
+      "ordinal": 288,
+      "startMs": 1449440,
+      "endMs": 1457679,
+      "text": "And so in this case now there's not a single value attached to the key x."
+    },
+    {
+      "id": "5888291a-21b5-4c6b-a0a4-69371e0db304",
+      "ordinal": 289,
+      "startMs": 1453200,
+      "endMs": 1457679,
+      "text": "But there could be multiple values."
+    },
+    {
+      "id": "3055e497-d2ee-4cdd-b960-a02b70fdf8aa",
+      "ordinal": 290,
+      "startMs": 1453200,
+      "endMs": 1459840,
+      "text": "In this case v1 and v2."
+    },
+    {
+      "id": "3b875c6f-3562-48c2-a180-0a697edff6a7",
+      "ordinal": 291,
+      "startMs": 1457679,
+      "endMs": 1464559,
+      "text": "And so in this case we can give those two values back to the application."
+    },
+    {
+      "id": "6285b7d2-cb50-464f-8f2e-bf8f497bd3b0",
+      "ordinal": 292,
+      "startMs": 1462080,
+      "endMs": 1470000,
+      "text": "And the application can then resolve this."
+    },
+    {
+      "id": "ffb9ff2a-7e36-40c8-9a5d-540195850511",
+      "ordinal": 293,
+      "startMs": 1464559,
+      "endMs": 1470000,
+      "text": "So this is called a conflict."
+    },
+    {
+      "id": "bccf6c8c-271f-4e0e-9dbe-5bd4d829bc50",
+      "ordinal": 294,
+      "startMs": 1467120,
+      "endMs": 1474880,
+      "text": "And the application can have explicit logic for conflict resolution."
+    },
+    {
+      "id": "6dcb7f38-fe23-443d-b421-0e6baf38d103",
+      "ordinal": 295,
+      "startMs": 1470640,
+      "endMs": 1481360,
+      "text": "So that if these two updates happen concurrently and we have two different values written by different clients then we can avoid throwing away data."
+    },
+    {
+      "id": "31b9f7ce-6b57-4900-81c8-a607a799d94c",
+      "ordinal": 296,
+      "startMs": 1477919,
+      "endMs": 1488159,
+      "text": "We can combine the information from these two values that were written concurrently into a single value."
+    },
+    {
+      "id": "1a939005-b6fc-4500-b56a-a1fefae3750a",
+      "ordinal": 297,
+      "startMs": 1485039,
+      "endMs": 1490240,
+      "text": "Write it back to the database again."
+    },
+    {
+      "id": "4c40456c-0aa2-42ee-85cd-4d75a9f83d06",
+      "ordinal": 298,
+      "startMs": 1488159,
+      "endMs": 1491760,
+      "text": "And that ensures then everyone is happy."
+    },
+    {
+      "id": "619ca7f7-9f0e-42bb-aa13-22854771fa46",
+      "ordinal": 299,
+      "startMs": 1490240,
+      "endMs": 1494880,
+      "text": "And no data was lost."
+    },
+    {
+      "id": "a512a351-82c1-44f7-a90f-31e94bd366b7",
+      "ordinal": 300,
+      "startMs": 1491760,
+      "endMs": 1502159,
+      "text": "So we have this choice here using either the totally ordered lanport timestamps or the partially ordered vector timestamps."
+    },
+    {
+      "id": "f1010ce9-d424-4f9b-875c-4c546a19379f",
+      "ordinal": 301,
+      "startMs": 1500080,
+      "endMs": 1504799,
+      "text": "Depending on which kind of behavior we actually want."
+    },
+    {
+      "id": "511a83c6-b11d-4e99-8b65-bc96a024bd19",
+      "ordinal": 302,
+      "startMs": 1502159,
+      "endMs": 1511919,
+      "text": "And different database systems actually make different choices with regard to what sort of timestamps they want to use."
+    },
+    {
+      "id": "449fef8b-7d07-49e3-9477-7a6ec8a56c96",
+      "ordinal": 303,
+      "startMs": 1508159,
+      "endMs": 1517120,
+      "text": "Because for different applications different methods are appropriate."
+    },
+    {
+      "id": "117ce4d2-2344-4978-b20b-114216e8576e",
+      "ordinal": 304,
+      "startMs": 1514240,
+      "endMs": 1521840,
+      "text": "So far that and next we will look at fault tolerance in replication."
+    }
+  ],
+  "notes": {
+    "markdown": "## Timestamp choice in replication\n\n1. Client one wants to update the value associated with key x to v1 with a logical timestamp t1.[^203][^204][^205][^206]\n2. Concurrently, client two wants to set the value of key x to v2 with a logical timestamp t2.[^207][^208][^209]\n3. Replica a receives the request from client two first, then receives the request from client one.[^210]\n4. Replica b receives the requests in the opposite order: first from client one, then from client two.[^211][^212]\n5. The replicas cannot use the order in which they see the requests to determine whether v1 or v2 is the final value, because they would end up in different states and inconsistent at the end.[^213][^214][^215][^216]\n6. All replicas must end up in the same state in a replicated system, and timestamps provide the relative ordering of operations needed to ensure consistent state across replicas.[^217][^218][^219][^220]\n\n- Last writer wins is a resolution policy where the value with the higher timestamp is kept and lower timestamps are overwritten.[^221][^222][^223][^224][^225][^226][^227][^228]\n- Last writer wins discards data by overwriting values with lower timestamps and forgetting them entirely.[^229][^230][^231][^232][^233]\n- Vector clocks are incomparable when generated for concurrent operations, allowing detection of concurrent updates.[^234][^235][^236][^237]\n- Using vector clocks, a value is only overwritten by another value if the vector timestamps show the later one is strictly greater than the earlier one.[^238][^239]\n- When concurrent updates are detected using vector clocks, multiple values can be kept for a single key and returned to the application for conflict resolution.[^240][^241][^242][^243][^244][^245]\n- An application can have explicit logic for conflict resolution to combine information from concurrent updates into a single value and avoid losing data.[^246][^247][^248][^249][^250][^251]\n- Different database systems make different choices between totally ordered Lamport timestamps and partially ordered vector timestamps depending on what behavior is appropriate for their applications.[^252][^253][^254][^255]",
+    "citations": [
+      {
+        "id": "7179770b-4554-43f7-9379-fb4beef53dbb",
+        "ordinal": 202,
+        "spanId": "8d3297ec-c20b-490c-9957-4b50f92d455a",
+        "spanOrdinal": 235,
+        "startMs": 1193200,
+        "endMs": 1204799,
+        "charStart": 19014,
+        "charEnd": 19131,
+        "text": "And this becomes apparent if we consider two clients that are making rights to this replicated database concurrently."
+      },
+      {
+        "id": "39521ce8-979c-4d99-b07d-ad7c416a295a",
+        "ordinal": 203,
+        "spanId": "5cf038e4-3625-4cab-920e-94309b1ee29f",
+        "spanOrdinal": 236,
+        "startMs": 1200160,
+        "endMs": 1211840,
+        "charStart": 19132,
+        "charEnd": 19226,
+        "text": "So here on client one client one wants to update the value that is associated with some key x."
+      },
+      {
+        "id": "c7439b5c-a97f-426e-8d90-3874f8ae1b02",
+        "ordinal": 204,
+        "spanId": "e8b94609-ca46-4e73-9f98-6f6dac35e3ae",
+        "spanOrdinal": 237,
+        "startMs": 1208480,
+        "endMs": 1216480,
+        "charStart": 19227,
+        "charEnd": 19296,
+        "text": "So x is the key v1 is the value that client one wants to attach to x."
+      },
+      {
+        "id": "4d8684c3-73b3-47b1-a91a-079865a6b651",
+        "ordinal": 205,
+        "spanId": "04e20db2-43dd-49ad-87ae-8aea5b3a9d58",
+        "spanOrdinal": 238,
+        "startMs": 1211840,
+        "endMs": 1220799,
+        "charStart": 19297,
+        "charEnd": 19359,
+        "text": "And this operation is going to have a logical timestamp of t1."
+      },
+      {
+        "id": "4ecaaafd-f8f8-436d-9041-01ce9f280416",
+        "ordinal": 206,
+        "spanId": "d10a9fbd-66b7-47c9-b81d-78ed240a4b54",
+        "spanOrdinal": 239,
+        "startMs": 1218720,
+        "endMs": 1230000,
+        "charStart": 19360,
+        "charEnd": 19490,
+        "text": "Concurrently while this is happening client two also wants to set the value of x since it wants to set it to a different value b2."
+      },
+      {
+        "id": "c0a2137c-bda8-4546-a590-6ea51f2a5f7f",
+        "ordinal": 207,
+        "spanId": "dd00b50d-63de-4a61-8660-ceca53666dee",
+        "spanOrdinal": 240,
+        "startMs": 1227520,
+        "endMs": 1239120,
+        "charStart": 19491,
+        "charEnd": 19623,
+        "text": "So client ones also generates a logical timestamp t2 um sends an operation of the network attached he attaches t2 to this operation."
+      },
+      {
+        "id": "e20c23e1-10f9-4208-9e31-fac669d31246",
+        "ordinal": 208,
+        "spanId": "e7dffa56-0937-4fcc-9e70-a43abf2752d6",
+        "spanOrdinal": 241,
+        "startMs": 1234880,
+        "endMs": 1242799,
+        "charStart": 19624,
+        "charEnd": 19681,
+        "text": "The operation is i want to set the key x to the value v2."
+      },
+      {
+        "id": "717b8684-862b-41a7-a3aa-8055f38e67a3",
+        "ordinal": 209,
+        "spanId": "6878e523-84ee-4d72-9f4c-6294717cce3a",
+        "spanOrdinal": 242,
+        "startMs": 1239120,
+        "endMs": 1251200,
+        "charStart": 19682,
+        "charEnd": 19794,
+        "text": "Now notice that replica a first receives the request from client to second receives the request from client one."
+      },
+      {
+        "id": "62fdc11b-2b73-42e9-a642-78e45a54c816",
+        "ordinal": 210,
+        "spanId": "68bd4afe-be9f-45cd-8d5e-afda0178566b",
+        "spanOrdinal": 243,
+        "startMs": 1249280,
+        "endMs": 1255039,
+        "charStart": 19795,
+        "charEnd": 19849,
+        "text": "Whereas replica b receives them in the opposite order."
+      },
+      {
+        "id": "72a76159-b0ec-4d2e-b2a4-2bb25aa9ffd2",
+        "ordinal": 211,
+        "spanId": "eaadfee8-b63c-4f5f-8568-a9fbe913f83c",
+        "spanOrdinal": 244,
+        "startMs": 1251200,
+        "endMs": 1260000,
+        "charStart": 19850,
+        "charEnd": 19939,
+        "text": "Replica b first receives uh the request from client one then the request from client two."
+      },
+      {
+        "id": "c5bce86c-4576-4f43-a25f-0302aa5512f5",
+        "ordinal": 212,
+        "spanId": "1423df8e-517c-4fd4-a54a-c6c7a485969d",
+        "spanOrdinal": 245,
+        "startMs": 1256080,
+        "endMs": 1264480,
+        "charStart": 19940,
+        "charEnd": 20023,
+        "text": "So this means the replicas can't just use the order in which they see the requests."
+      },
+      {
+        "id": "38b47157-e2c2-4e54-a06f-5b32f2d35698",
+        "ordinal": 213,
+        "spanId": "aa346d96-886c-47ab-93c3-23858915f5c1",
+        "spanOrdinal": 246,
+        "startMs": 1261600,
+        "endMs": 1268159,
+        "charStart": 20024,
+        "charEnd": 20088,
+        "text": "In order to determine whether v1 or v2 is the final value for x."
+      },
+      {
+        "id": "02d8c7d9-9203-4311-ba6b-abae1946da95",
+        "ordinal": 214,
+        "spanId": "1d81e9a5-9dbd-4f8c-a053-dc6f4bd3a206",
+        "spanOrdinal": 247,
+        "startMs": 1266480,
+        "endMs": 1275120,
+        "charStart": 20089,
+        "charEnd": 20200,
+        "text": "Because if they did just use the order in which the requests arrive then they would end up in different states."
+      },
+      {
+        "id": "d91e6d6a-522c-4c8d-a9d4-9e7227254fd0",
+        "ordinal": 215,
+        "spanId": "0ed7643c-5808-4bda-896d-f1641714c726",
+        "spanOrdinal": 248,
+        "startMs": 1271360,
+        "endMs": 1276240,
+        "charStart": 20201,
+        "charEnd": 20243,
+        "text": "They would end up inconsistent at the end."
+      },
+      {
+        "id": "20a08f7c-5ca9-4919-9eba-e75881a7bc66",
+        "ordinal": 216,
+        "spanId": "0cc254c8-b2ce-405f-8954-fc884f8f3a88",
+        "spanOrdinal": 249,
+        "startMs": 1273120,
+        "endMs": 1280640,
+        "charStart": 20244,
+        "charEnd": 20346,
+        "text": "And so what we want in a replicated system is that all of the replicas end up being in the same state."
+      },
+      {
+        "id": "e46c888e-c0b8-42ef-94f7-de4c8cc9c651",
+        "ordinal": 217,
+        "spanId": "bbe83d70-301d-4470-8ac1-f8a82f736ff0",
+        "spanOrdinal": 250,
+        "startMs": 1277919,
+        "endMs": 1281840,
+        "charStart": 20347,
+        "charEnd": 20380,
+        "text": "Otherwise it's not a replication."
+      },
+      {
+        "id": "9cc192ac-5134-458b-893c-593e6bbf1fc5",
+        "ordinal": 218,
+        "spanId": "fbe5b62b-f3a4-485c-9b19-1ab16d93c220",
+        "spanOrdinal": 251,
+        "startMs": 1280640,
+        "endMs": 1284720,
+        "charStart": 20381,
+        "charEnd": 20431,
+        "text": "And that's why we need to use the timestamps here."
+      },
+      {
+        "id": "df52d842-27fb-4595-b062-1f584eca4cc9",
+        "ordinal": 219,
+        "spanId": "03ad6a86-adf2-4c3a-869b-251cd43cae4a",
+        "spanOrdinal": 252,
+        "startMs": 1281840,
+        "endMs": 1290720,
+        "charStart": 20432,
+        "charEnd": 20507,
+        "text": "Because the timestamps provide a relative ordering of these two operations."
+      },
+      {
+        "id": "d36f88fa-bbc8-472b-a871-f978282f20c7",
+        "ordinal": 220,
+        "spanId": "929fdd3b-45d8-49b8-b8a1-1ff0289f15b5",
+        "spanOrdinal": 261,
+        "startMs": 1318640,
+        "endMs": 1330080,
+        "charStart": 21083,
+        "charEnd": 21151,
+        "text": "And so what we can do here for example is that we compare t1 and t2."
+      },
+      {
+        "id": "ec3f3588-de80-4db8-983e-a314522302e0",
+        "ordinal": 221,
+        "spanId": "5ef8fbd5-b0b1-4696-b197-279771b10910",
+        "spanOrdinal": 262,
+        "startMs": 1326960,
+        "endMs": 1334640,
+        "charStart": 21152,
+        "charEnd": 21225,
+        "text": "And we just keep the the version the the value with the higher timestamp."
+      },
+      {
+        "id": "056fba9a-2961-434d-8376-d6684c07690d",
+        "ordinal": 222,
+        "spanId": "57dd83a8-d182-4eec-b4af-ce61317dfdcc",
+        "spanOrdinal": 263,
+        "startMs": 1330799,
+        "endMs": 1342799,
+        "charStart": 21226,
+        "charEnd": 21350,
+        "text": "And this will work because then as the value gets overwritten we know that the overwrite happens after a previous operation."
+      },
+      {
+        "id": "d433479d-d966-449e-a9a9-a17153b1ca51",
+        "ordinal": 223,
+        "spanId": "c7a0260a-ca7b-4f81-a7f4-0e53458f31cc",
+        "spanOrdinal": 264,
+        "startMs": 1339760,
+        "endMs": 1345200,
+        "charStart": 21351,
+        "charEnd": 21405,
+        "text": "And therefore it will always have a greater timestamp."
+      },
+      {
+        "id": "d8d304b3-60b6-4c9e-8c25-a27489355aa1",
+        "ordinal": 224,
+        "spanId": "eac60cda-1590-48a2-b61f-81f85ff916e5",
+        "spanOrdinal": 265,
+        "startMs": 1342799,
+        "endMs": 1351760,
+        "charStart": 21406,
+        "charEnd": 21492,
+        "text": "So therefore overwriting a smaller timestamp with a greater timestamp is a fine thing."
+      },
+      {
+        "id": "2aad697a-cf60-4e65-9fc4-b6b99c9d4ee9",
+        "ordinal": 225,
+        "spanId": "879cf406-cc3d-4594-b710-03cd0f556477",
+        "spanOrdinal": 267,
+        "startMs": 1346880,
+        "endMs": 1354480,
+        "charStart": 21510,
+        "charEnd": 21555,
+        "text": "And this behavior is called last writer wins."
+      },
+      {
+        "id": "b28e754d-b04e-4f1f-9098-f51a95d6fdf3",
+        "ordinal": 226,
+        "spanId": "42e8dc0b-cb68-40fe-9953-9ef569a9fa8e",
+        "spanOrdinal": 268,
+        "startMs": 1351760,
+        "endMs": 1359200,
+        "charStart": 21556,
+        "charEnd": 21646,
+        "text": "Because we assume that the last one the last writer is the one with the highest timestamp."
+      },
+      {
+        "id": "3849fa56-7d35-4a95-ae8b-23d6ada0c6f6",
+        "ordinal": 227,
+        "spanId": "b8fc53a3-841d-40bc-94f9-3f9526010e98",
+        "spanOrdinal": 269,
+        "startMs": 1357200,
+        "endMs": 1361200,
+        "charStart": 21647,
+        "charEnd": 21681,
+        "text": "And so the highest timestamp wins."
+      },
+      {
+        "id": "cd7a3e77-3c94-4138-9211-9fde218a49ac",
+        "ordinal": 228,
+        "spanId": "d9ea7bf5-81a7-4661-a50b-f116cdb17100",
+        "spanOrdinal": 271,
+        "startMs": 1361200,
+        "endMs": 1372880,
+        "charStart": 21749,
+        "charEnd": 21863,
+        "text": "Note however that this means that if say t2 is greater than t1 this means we keep v2 which was written by client2."
+      },
+      {
+        "id": "7011ea30-2fd6-4d8d-9b49-15116eb446ce",
+        "ordinal": 229,
+        "spanId": "43b707f5-9264-4d71-aa50-ef548b074d02",
+        "spanOrdinal": 272,
+        "startMs": 1368720,
+        "endMs": 1376559,
+        "charStart": 21864,
+        "charEnd": 21889,
+        "text": "And we simply discard v1."
+      },
+      {
+        "id": "3da1081b-3542-4442-8596-7754b4960475",
+        "ordinal": 230,
+        "spanId": "74e5deec-e6f8-4e95-a499-3efaf76a120e",
+        "spanOrdinal": 273,
+        "startMs": 1372880,
+        "endMs": 1378720,
+        "charStart": 21890,
+        "charEnd": 21917,
+        "text": "So value v1 is simply gone."
+      },
+      {
+        "id": "0a8e65c9-31a0-4bf3-9fee-8974e1453e9a",
+        "ordinal": 231,
+        "spanId": "25d373a4-3027-4029-a870-f331ac9a5d01",
+        "spanOrdinal": 274,
+        "startMs": 1372880,
+        "endMs": 1380880,
+        "charStart": 21918,
+        "charEnd": 21964,
+        "text": "So we're not even storing that value anywhere."
+      },
+      {
+        "id": "bee9b2c2-c131-4bee-b28e-aa9dbbc6bf4e",
+        "ordinal": 232,
+        "spanId": "8872f338-1a3c-4112-ba6e-19ac25d69d55",
+        "spanOrdinal": 275,
+        "startMs": 1376559,
+        "endMs": 1382799,
+        "charStart": 21965,
+        "charEnd": 22006,
+        "text": "It simply gets overwritten and forgotten."
+      },
+      {
+        "id": "b82a4a81-1d3c-4486-a068-935effb7c397",
+        "ordinal": 233,
+        "spanId": "4b3039cf-8ef6-490b-8e95-095b90ebfa80",
+        "spanOrdinal": 281,
+        "startMs": 1403919,
+        "endMs": 1410720,
+        "charStart": 22454,
+        "charEnd": 22529,
+        "text": "And if we want that well we use a vector clock instead of a lan port clock."
+      },
+      {
+        "id": "a40d1f9b-f415-4545-ab15-c7d7ab0043c7",
+        "ordinal": 234,
+        "spanId": "a0b2ef7f-79f4-4faa-b98a-024628f3cff7",
+        "spanOrdinal": 282,
+        "startMs": 1407919,
+        "endMs": 1422240,
+        "charStart": 22530,
+        "charEnd": 22699,
+        "text": "If we use a vector clock then if we generate two different timestamps t1 and t2 and these two operations are concurrent then the vector clocks will also be incomparable."
+      },
+      {
+        "id": "2b0c7964-2893-4d35-a72e-a0d3cb1dfd80",
+        "ordinal": 235,
+        "spanId": "78992b77-c868-46dd-a04c-24cf12ab4d37",
+        "spanOrdinal": 283,
+        "startMs": 1417200,
+        "endMs": 1423600,
+        "charStart": 22700,
+        "charEnd": 22749,
+        "text": "We will end up with t1 and t2 being incomparable."
+      },
+      {
+        "id": "1f69c1b5-772d-4776-bbd9-8d82a60ab174",
+        "ordinal": 236,
+        "spanId": "41e6d8c4-64b8-4676-8f06-1c86e914b870",
+        "spanOrdinal": 284,
+        "startMs": 1419440,
+        "endMs": 1431200,
+        "charStart": 22750,
+        "charEnd": 22829,
+        "text": "And this allows us to detect the fact that these two operations are concurrent."
+      },
+      {
+        "id": "38ce851b-a15f-4115-babe-0d7cfa606fe0",
+        "ordinal": 237,
+        "spanId": "30aad08d-a0fd-4d9c-ab19-a4632c3448da",
+        "spanOrdinal": 285,
+        "startMs": 1425520,
+        "endMs": 1442320,
+        "charStart": 22830,
+        "charEnd": 22997,
+        "text": "And so in this case now we will only overwrite one value with another value if there are vector timestamps uh are the later ones strictly greater than the earlier one."
+      },
+      {
+        "id": "e1307b88-3314-49e2-83ea-429a897d49b4",
+        "ordinal": 238,
+        "spanId": "1b6582d8-3df5-4d99-9c35-92b30f8889a8",
+        "spanOrdinal": 286,
+        "startMs": 1440080,
+        "endMs": 1447919,
+        "charStart": 22998,
+        "charEnd": 23069,
+        "text": "Under the strictly greater than relation that we've defined previously."
+      },
+      {
+        "id": "e5fedb1b-c745-4a21-8705-b39c276333bf",
+        "ordinal": 239,
+        "spanId": "29392eef-de9f-4084-93ec-4e79a4ccf3e1",
+        "spanOrdinal": 287,
+        "startMs": 1445279,
+        "endMs": 1451360,
+        "charStart": 23070,
+        "charEnd": 23139,
+        "text": "But if we have two concurrent updates then we will keep both of them."
+      },
+      {
+        "id": "b7f67f4b-6c50-4101-909d-dd583d53cc7e",
+        "ordinal": 240,
+        "spanId": "9615cd55-38de-45c2-bd07-28f1d59bf719",
+        "spanOrdinal": 288,
+        "startMs": 1449440,
+        "endMs": 1457679,
+        "charStart": 23140,
+        "charEnd": 23213,
+        "text": "And so in this case now there's not a single value attached to the key x."
+      },
+      {
+        "id": "9bb42aa5-407f-4e0f-99fe-10d072057546",
+        "ordinal": 241,
+        "spanId": "5888291a-21b5-4c6b-a0a4-69371e0db304",
+        "spanOrdinal": 289,
+        "startMs": 1453200,
+        "endMs": 1457679,
+        "charStart": 23214,
+        "charEnd": 23249,
+        "text": "But there could be multiple values."
+      },
+      {
+        "id": "b1dc4459-1b18-405a-89dd-745578b99f28",
+        "ordinal": 242,
+        "spanId": "3055e497-d2ee-4cdd-b960-a02b70fdf8aa",
+        "spanOrdinal": 290,
+        "startMs": 1453200,
+        "endMs": 1459840,
+        "charStart": 23250,
+        "charEnd": 23273,
+        "text": "In this case v1 and v2."
+      },
+      {
+        "id": "8598d3c6-f692-41ce-8ebd-03fa1527ae9f",
+        "ordinal": 243,
+        "spanId": "3b875c6f-3562-48c2-a180-0a697edff6a7",
+        "spanOrdinal": 291,
+        "startMs": 1457679,
+        "endMs": 1464559,
+        "charStart": 23274,
+        "charEnd": 23347,
+        "text": "And so in this case we can give those two values back to the application."
+      },
+      {
+        "id": "c2834c9e-5404-440e-89ce-f746feb3fc6c",
+        "ordinal": 244,
+        "spanId": "6285b7d2-cb50-464f-8f2e-bf8f497bd3b0",
+        "spanOrdinal": 292,
+        "startMs": 1462080,
+        "endMs": 1470000,
+        "charStart": 23348,
+        "charEnd": 23390,
+        "text": "And the application can then resolve this."
+      },
+      {
+        "id": "63a5c4df-8671-4333-8ca1-48f8f800d0ce",
+        "ordinal": 245,
+        "spanId": "bccf6c8c-271f-4e0e-9dbe-5bd4d829bc50",
+        "spanOrdinal": 294,
+        "startMs": 1467120,
+        "endMs": 1474880,
+        "charStart": 23421,
+        "charEnd": 23489,
+        "text": "And the application can have explicit logic for conflict resolution."
+      },
+      {
+        "id": "ed85177d-2172-4289-a752-035dd29a6021",
+        "ordinal": 246,
+        "spanId": "6dcb7f38-fe23-443d-b421-0e6baf38d103",
+        "spanOrdinal": 295,
+        "startMs": 1470640,
+        "endMs": 1481360,
+        "charStart": 23490,
+        "charEnd": 23638,
+        "text": "So that if these two updates happen concurrently and we have two different values written by different clients then we can avoid throwing away data."
+      },
+      {
+        "id": "8e688539-dd7d-4a78-ac90-4c6c7f4c2b94",
+        "ordinal": 247,
+        "spanId": "31b9f7ce-6b57-4900-81c8-a607a799d94c",
+        "spanOrdinal": 296,
+        "startMs": 1477919,
+        "endMs": 1488159,
+        "charStart": 23639,
+        "charEnd": 23743,
+        "text": "We can combine the information from these two values that were written concurrently into a single value."
+      },
+      {
+        "id": "6d467e6b-043b-4d6c-9560-4c3fca58267c",
+        "ordinal": 248,
+        "spanId": "1a939005-b6fc-4500-b56a-a1fefae3750a",
+        "spanOrdinal": 297,
+        "startMs": 1485039,
+        "endMs": 1490240,
+        "charStart": 23744,
+        "charEnd": 23780,
+        "text": "Write it back to the database again."
+      },
+      {
+        "id": "4a026559-fe2c-4ef2-bdef-bd5873240f82",
+        "ordinal": 249,
+        "spanId": "4c40456c-0aa2-42ee-85cd-4d75a9f83d06",
+        "spanOrdinal": 298,
+        "startMs": 1488159,
+        "endMs": 1491760,
+        "charStart": 23781,
+        "charEnd": 23821,
+        "text": "And that ensures then everyone is happy."
+      },
+      {
+        "id": "7f890322-a356-4ca1-8051-b9d26e771953",
+        "ordinal": 250,
+        "spanId": "619ca7f7-9f0e-42bb-aa13-22854771fa46",
+        "spanOrdinal": 299,
+        "startMs": 1490240,
+        "endMs": 1494880,
+        "charStart": 23822,
+        "charEnd": 23843,
+        "text": "And no data was lost."
+      },
+      {
+        "id": "eb46e15e-0802-4406-9f0e-8175c3185557",
+        "ordinal": 251,
+        "spanId": "a512a351-82c1-44f7-a90f-31e94bd366b7",
+        "spanOrdinal": 300,
+        "startMs": 1491760,
+        "endMs": 1502159,
+        "charStart": 23844,
+        "charEnd": 23967,
+        "text": "So we have this choice here using either the totally ordered lanport timestamps or the partially ordered vector timestamps."
+      },
+      {
+        "id": "1b7460c7-4f5f-4997-abaf-6f5e5eb0dbe2",
+        "ordinal": 252,
+        "spanId": "f1010ce9-d424-4f9b-875c-4c546a19379f",
+        "spanOrdinal": 301,
+        "startMs": 1500080,
+        "endMs": 1504799,
+        "charStart": 23968,
+        "charEnd": 24021,
+        "text": "Depending on which kind of behavior we actually want."
+      },
+      {
+        "id": "52a2d8d4-072b-46ce-9760-d3ba661c223a",
+        "ordinal": 253,
+        "spanId": "511a83c6-b11d-4e99-8b65-bc96a024bd19",
+        "spanOrdinal": 302,
+        "startMs": 1502159,
+        "endMs": 1511919,
+        "charStart": 24022,
+        "charEnd": 24141,
+        "text": "And different database systems actually make different choices with regard to what sort of timestamps they want to use."
+      },
+      {
+        "id": "4e788cf2-5715-498c-9db9-260ab9b1421a",
+        "ordinal": 254,
+        "spanId": "449fef8b-7d07-49e3-9477-7a6ec8a56c96",
+        "spanOrdinal": 303,
+        "startMs": 1508159,
+        "endMs": 1517120,
+        "charStart": 24142,
+        "charEnd": 24211,
+        "text": "Because for different applications different methods are appropriate."
+      }
+    ]
+  },
+  "cheatSheet": {
+    "markdown": "## Request delivery semantics\n- At most once: Request sent once without retries; may or may not arrive.[^42][^43][^44]\n- At least once: Retry until acknowledgement received; request may arrive multiple times.[^45][^46]\n- Exactly once: Operation takes effect exactly once despite retries and message loss.[^47][^48][^49]\n- Exactly once with idempotence: Retry idempotent operations to achieve exactly once semantics.[^50][^51]\n- Exactly once with deduplication: Store requests that have happened to achieve exactly once.[^52][^53]\n",
+    "citations": [
+      {
+        "id": "228f8b00-56d7-4588-9ea8-af53df58f421",
+        "ordinal": 41,
+        "spanId": "df013257-e9d1-4e61-86fb-22ab14211d25",
+        "spanOrdinal": 114,
+        "startMs": 584160,
+        "endMs": 590080,
+        "charStart": 9698,
+        "charEnd": 9764,
+        "text": "So at most ones just means you send a request of the network once."
+      },
+      {
+        "id": "154a4e55-173a-4aad-8e79-b11caa2c72e6",
+        "ordinal": 42,
+        "spanId": "9c30bdd3-3656-4adf-bdd0-459201e5baca",
+        "spanOrdinal": 115,
+        "startMs": 588480,
+        "endMs": 594240,
+        "charStart": 9765,
+        "charEnd": 9823,
+        "text": "It may or may not get there but you're not going to retry."
+      },
+      {
+        "id": "07e4698b-d76e-433d-952f-5a781a1acd07",
+        "ordinal": 43,
+        "spanId": "eaff4904-2908-4374-9998-c9cd620dd24f",
+        "spanOrdinal": 116,
+        "startMs": 591839,
+        "endMs": 599600,
+        "charStart": 9824,
+        "charEnd": 9927,
+        "text": "So it might arrive, it might not arrive, but you're not going to try and make this reliable in any way."
+      },
+      {
+        "id": "3d411384-4f47-4a15-b1b5-486b53816da6",
+        "ordinal": 44,
+        "spanId": "a2f9c42f-4fb3-4779-ae91-8cc2d8cb67fc",
+        "spanOrdinal": 117,
+        "startMs": 597519,
+        "endMs": 603360,
+        "charStart": 9928,
+        "charEnd": 10003,
+        "text": "At least once means you're going to retry until you get an acknowledgement."
+      },
+      {
+        "id": "f4d91579-b718-4c83-8641-f7741259eb85",
+        "ordinal": 45,
+        "spanId": "e48ded59-b7fa-474a-839a-1fa736f06e79",
+        "spanOrdinal": 118,
+        "startMs": 601519,
+        "endMs": 606640,
+        "charStart": 10004,
+        "charEnd": 10054,
+        "text": "which means the request may arrive multiple times."
+      },
+      {
+        "id": "d0fa8a09-1fdd-43be-81d7-434d1f06699a",
+        "ordinal": 46,
+        "spanId": "76bc09f1-a1d3-4007-8eaa-c647a6110775",
+        "spanOrdinal": 119,
+        "startMs": 604560,
+        "endMs": 615200,
+        "charStart": 10055,
+        "charEnd": 10158,
+        "text": "But really what we typically want is exactly once, which means the operation takes effect exactly once."
+      },
+      {
+        "id": "570a438e-9271-4cc7-9243-5a6027647569",
+        "ordinal": 47,
+        "spanId": "2b17ab73-73ed-40bf-a587-1443f2be5cd7",
+        "spanOrdinal": 120,
+        "startMs": 612399,
+        "endMs": 621600,
+        "charStart": 10159,
+        "charEnd": 10227,
+        "text": "So the effect is as if the operation were received exactly one time."
+      },
+      {
+        "id": "05894f92-6cc4-4683-a8d8-019e5e342bc6",
+        "ordinal": 48,
+        "spanId": "976f0abd-60ce-4487-b62c-2a7a22c3cee0",
+        "spanOrdinal": 121,
+        "startMs": 617839,
+        "endMs": 630000,
+        "charStart": 10228,
+        "charEnd": 10343,
+        "text": "Even though in practice, due to retries and due to message loss, it may actually be some different number of times."
+      },
+      {
+        "id": "e8f90b57-1d3d-4506-903e-3d61c7e981bb",
+        "ordinal": 49,
+        "spanId": "f720c910-ced4-4031-8801-f41a27afcb47",
+        "spanOrdinal": 122,
+        "startMs": 626160,
+        "endMs": 636720,
+        "charStart": 10344,
+        "charEnd": 10455,
+        "text": "and So if we retry and also have a an operation that is item potent, then we can achieve exactly one semantics."
+      },
+      {
+        "id": "390c04c8-19e2-468e-b892-2daf6f3a35f5",
+        "ordinal": 50,
+        "spanId": "857c043b-a65a-4a84-8f70-27cd723592cf",
+        "spanOrdinal": 123,
+        "startMs": 634399,
+        "endMs": 643440,
+        "charStart": 10456,
+        "charEnd": 10572,
+        "text": "So that means even if the operation is applied multiple times, the effect is as if it had been applied exactly once."
+      },
+      {
+        "id": "b261dd05-4cf4-4a0b-8861-72b0acfde3f7",
+        "ordinal": 51,
+        "spanId": "efa76f74-98ed-45a9-b941-52b53fe754dc",
+        "spanOrdinal": 124,
+        "startMs": 641600,
+        "endMs": 647600,
+        "charStart": 10573,
+        "charEnd": 10644,
+        "text": "Or of course we can achieve exactly once through deduplication as well."
+      },
+      {
+        "id": "505c4ad7-9926-488e-a139-94f0ff6a60aa",
+        "ordinal": 52,
+        "spanId": "58d89e23-fcea-4ae1-aa9a-36e11417c6b2",
+        "spanOrdinal": 125,
+        "startMs": 645360,
+        "endMs": 653440,
+        "charStart": 10645,
+        "charEnd": 10732,
+        "text": "As long as we're willing to store the requests that have already happened in some form."
+      }
+    ]
+  },
+  "question": {
+    "question": "When vector clocks detect concurrent updates to the same key, what can an application do to avoid losing data?",
+    "answer": "The application can implement explicit conflict resolution logic to combine information from both concurrent values into a single resolved value.",
+    "citations": [
+      {
+        "id": "aa9cd19b-2881-4c9b-a3de-f28b2605bb94",
+        "ordinal": 0,
+        "spanId": "29392eef-de9f-4084-93ec-4e79a4ccf3e1",
+        "spanOrdinal": 287,
+        "startMs": 1445279,
+        "endMs": 1451360,
+        "charStart": 23070,
+        "charEnd": 23139,
+        "text": "But if we have two concurrent updates then we will keep both of them."
+      },
+      {
+        "id": "d93288dc-fe2a-4a7d-8014-6fedd5afbeb1",
+        "ordinal": 1,
+        "spanId": "9615cd55-38de-45c2-bd07-28f1d59bf719",
+        "spanOrdinal": 288,
+        "startMs": 1449440,
+        "endMs": 1457679,
+        "charStart": 23140,
+        "charEnd": 23213,
+        "text": "And so in this case now there's not a single value attached to the key x."
+      },
+      {
+        "id": "b6d422b9-ec03-4295-8806-2b645da0620a",
+        "ordinal": 2,
+        "spanId": "5888291a-21b5-4c6b-a0a4-69371e0db304",
+        "spanOrdinal": 289,
+        "startMs": 1453200,
+        "endMs": 1457679,
+        "charStart": 23214,
+        "charEnd": 23249,
+        "text": "But there could be multiple values."
+      },
+      {
+        "id": "083bb862-2a58-4f37-aa98-40560cfd0a13",
+        "ordinal": 3,
+        "spanId": "3055e497-d2ee-4cdd-b960-a02b70fdf8aa",
+        "spanOrdinal": 290,
+        "startMs": 1453200,
+        "endMs": 1459840,
+        "charStart": 23250,
+        "charEnd": 23273,
+        "text": "In this case v1 and v2."
+      },
+      {
+        "id": "43acb0c1-13e1-41fe-b56a-f803fd1198cd",
+        "ordinal": 4,
+        "spanId": "3b875c6f-3562-48c2-a180-0a697edff6a7",
+        "spanOrdinal": 291,
+        "startMs": 1457679,
+        "endMs": 1464559,
+        "charStart": 23274,
+        "charEnd": 23347,
+        "text": "And so in this case we can give those two values back to the application."
+      },
+      {
+        "id": "f1bc7ddb-4159-4aea-a381-406e1459f3b1",
+        "ordinal": 5,
+        "spanId": "6285b7d2-cb50-464f-8f2e-bf8f497bd3b0",
+        "spanOrdinal": 292,
+        "startMs": 1462080,
+        "endMs": 1470000,
+        "charStart": 23348,
+        "charEnd": 23390,
+        "text": "And the application can then resolve this."
+      },
+      {
+        "id": "e347fbfd-217c-40c8-be84-a9eadecd64ca",
+        "ordinal": 6,
+        "spanId": "ffb9ff2a-7e36-40c8-9a5d-540195850511",
+        "spanOrdinal": 293,
+        "startMs": 1464559,
+        "endMs": 1470000,
+        "charStart": 23391,
+        "charEnd": 23420,
+        "text": "So this is called a conflict."
+      },
+      {
+        "id": "ff2030c1-2637-4547-aa0d-a70a56776300",
+        "ordinal": 7,
+        "spanId": "bccf6c8c-271f-4e0e-9dbe-5bd4d829bc50",
+        "spanOrdinal": 294,
+        "startMs": 1467120,
+        "endMs": 1474880,
+        "charStart": 23421,
+        "charEnd": 23489,
+        "text": "And the application can have explicit logic for conflict resolution."
+      },
+      {
+        "id": "2fc25758-4aad-4a31-a03d-46aa7c679822",
+        "ordinal": 8,
+        "spanId": "6dcb7f38-fe23-443d-b421-0e6baf38d103",
+        "spanOrdinal": 295,
+        "startMs": 1470640,
+        "endMs": 1481360,
+        "charStart": 23490,
+        "charEnd": 23638,
+        "text": "So that if these two updates happen concurrently and we have two different values written by different clients then we can avoid throwing away data."
+      },
+      {
+        "id": "3eb6dbc9-1301-44e5-a3e4-7fc297df1d43",
+        "ordinal": 9,
+        "spanId": "31b9f7ce-6b57-4900-81c8-a607a799d94c",
+        "spanOrdinal": 296,
+        "startMs": 1477919,
+        "endMs": 1488159,
+        "charStart": 23639,
+        "charEnd": 23743,
+        "text": "We can combine the information from these two values that were written concurrently into a single value."
+      },
+      {
+        "id": "fe29ad75-9de8-4eb7-86fe-e172fe64f054",
+        "ordinal": 10,
+        "spanId": "1a939005-b6fc-4500-b56a-a1fefae3750a",
+        "spanOrdinal": 297,
+        "startMs": 1485039,
+        "endMs": 1490240,
+        "charStart": 23744,
+        "charEnd": 23780,
+        "text": "Write it back to the database again."
+      },
+      {
+        "id": "d56ff72e-735e-4a33-a395-18046cafd95f",
+        "ordinal": 11,
+        "spanId": "4c40456c-0aa2-42ee-85cd-4d75a9f83d06",
+        "spanOrdinal": 298,
+        "startMs": 1488159,
+        "endMs": 1491760,
+        "charStart": 23781,
+        "charEnd": 23821,
+        "text": "And that ensures then everyone is happy."
+      },
+      {
+        "id": "8cb37893-79ea-4eda-b697-3d1316bbea7a",
+        "ordinal": 12,
+        "spanId": "619ca7f7-9f0e-42bb-aa13-22854771fa46",
+        "spanOrdinal": 299,
+        "startMs": 1490240,
+        "endMs": 1494880,
+        "charStart": 23822,
+        "charEnd": 23843,
+        "text": "And no data was lost."
+      }
+    ]
+  },
+  "reviewOffsetsDays": [1, 7, 22, 60]
+}
