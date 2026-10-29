@@ -10,16 +10,19 @@
     "deploy:demo": "wrangler deploy --env demo",
     "cf-typegen": "wrangler types",
     "lint": "eslint src",
-    "typecheck": "wrangler types && tsc --noEmit"
+    "typecheck": "wrangler types && tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "entitlements": "workspace:*",
     "hono": "^4.13.14"
   },
   "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.4.9",
     "eslint": "^9.39.5",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.72.1",
-    "wrangler": "^4.154.0"
+    "wrangler": "^4.154.0",
+    "vitest": "^5.0.5"
   }
 }
