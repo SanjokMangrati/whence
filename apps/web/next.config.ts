@@ -13,6 +13,7 @@ const SECURITY_HEADERS = [
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  agentRules: false,
   transpilePackages: ['entitlements', 'notes-format', 'redact'],
   async headers() {
     return [{ source: '/:path*', headers: SECURITY_HEADERS }]

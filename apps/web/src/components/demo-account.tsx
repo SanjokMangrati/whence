@@ -32,11 +32,13 @@ declare global {
   }
 }
 
-export function DemoAccount() {
-  return SITE_KEY === undefined ? null : <DemoAccountButton siteKey={SITE_KEY} />
+export function DemoAccount({ className = '' }: { className?: string }) {
+  return SITE_KEY === undefined ? null : (
+    <DemoAccountButton siteKey={SITE_KEY} className={className} />
+  )
 }
 
-function DemoAccountButton({ siteKey }: { siteKey: string }) {
+function DemoAccountButton({ siteKey, className }: { siteKey: string; className: string }) {
   const router = useRouter()
   const container = useRef<HTMLDivElement>(null)
   const widget = useRef<WidgetId | null>(null)
@@ -81,7 +83,7 @@ function DemoAccountButton({ siteKey }: { siteKey: string }) {
   }
 
   return (
-    <div className="grid gap-2">
+    <div className={`grid gap-2 ${className}`}>
       <Script
         src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
         strategy="afterInteractive"
@@ -95,7 +97,7 @@ function DemoAccountButton({ siteKey }: { siteKey: string }) {
       )}
       <button
         type="button"
-        className="btn btn-secondary w-full"
+        className="btn btn-secondary"
         disabled={token === null || pending}
         onClick={() => token !== null && void start(token)}
       >
