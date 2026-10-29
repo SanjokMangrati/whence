@@ -1,7 +1,9 @@
-import { hc } from 'hono/client'
+import { hc, type InferRequestType } from 'hono/client'
 import type { AppType } from 'api/src/index'
 
 export const api = hc<AppType>('/').api
+
+export type OutputType = InferRequestType<typeof api.generations.$post>['json']['outputType']
 
 export async function readErrorCode(
   response: { json(): Promise<unknown> } | null,
