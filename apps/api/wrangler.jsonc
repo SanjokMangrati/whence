@@ -5,6 +5,7 @@
   "compatibility_date": "2026-10-29",
   "workers_dev": false,
   "preview_urls": false,
+  "rules": [{ "type": "Data", "globs": ["**/*.ttf"], "fallthrough": true }],
   "d1_databases": [{ "binding": "DB", "database_name": "whence" }],
   "r2_buckets": [{ "binding": "BUCKET", "bucket_name": "whence-content" }],
   "workflows": [

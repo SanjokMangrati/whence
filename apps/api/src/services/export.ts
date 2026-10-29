@@ -16,9 +16,10 @@ import {
 } from './artifact-reader'
 import { renderDocx } from './export-docx'
 import { renderMarkdown } from './export-markdown'
+import { renderPdf } from './export-pdf'
 import { requireEntitlement, resolvePlan } from './plans'
 
-export type ExportFormat = 'docx' | 'md'
+export type ExportFormat = 'pdf' | 'docx' | 'md'
 
 export interface ExportMarker {
   label: string
@@ -35,12 +36,14 @@ export interface ExportDocument {
 }
 
 const CONTENT_TYPE: Record<ExportFormat, string> = {
+  pdf: 'application/pdf',
   docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   md: 'text/markdown; charset=utf-8',
 }
 
 const RENDER: Record<ExportFormat, (document: ExportDocument) => Promise<Uint8Array<ArrayBuffer>>> =
   {
+    pdf: renderPdf,
     docx: renderDocx,
     md: async (document) => renderMarkdown(document),
   }

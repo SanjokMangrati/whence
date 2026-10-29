@@ -1,5 +1,6 @@
 import { env } from 'cloudflare:workers'
 import JSZip from 'jszip'
+import { PDFArray, PDFDict, PDFDocument, PDFName, PDFString } from 'pdf-lib'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createDb } from '../db/client'
 import { artifact, citation } from '../db/schema'
@@ -89,6 +90,18 @@ async function insertNotes(userId: string, sourceType: SourceType, markdown = MA
     })),
   )
   return { artifactId, sourceUrl: url }
+}
+
+async function linkTargets(bytes: Uint8Array) {
+  const pdf = await PDFDocument.load(bytes)
+  return pdf.getPages().flatMap((page) => {
+    const annotations = page.node.lookupMaybe(PDFName.of('Annots'), PDFArray)
+    if (annotations === undefined) return []
+    return annotations.asArray().map((ref) => {
+      const action = pdf.context.lookup(ref, PDFDict).lookup(PDFName.of('A'), PDFDict)
+      return action.lookup(PDFName.of('URI'), PDFString).decodeText()
+    })
+  })
 }
 
 describe('artifact export', () => {
@@ -210,5 +223,29 @@ describe('artifact export', () => {
       'typeof x === &quot;string&quot;',
     )
     expect(body).not.toContain('`')
+  })
+
+  it('renders a PDF with one source link and a link to the passage for each marker', async () => {
+    const { artifactId, sourceUrl } = await insertNotes(userId, 'video')
+
+    const file = await exportArtifact(deps, userId, artifactId, 'pdf')
+
+    expect(file).toMatchObject({
+      contentType: 'application/pdf',
+      filename: 'Spaced repetition - Notes.pdf',
+    })
+    expect(await linkTargets(file!.bytes)).toEqual([
+      sourceUrl,
+      ...Array<string>(5).fill(`${sourceUrl}?t=12s`),
+    ])
+  })
+
+  it('refuses a PDF the fonts cannot draw, and still gives the DOCX', async () => {
+    const { artifactId } = await insertNotes(userId, 'video', '- 間隔反復は記憶を強くする。[^1]')
+
+    await expect(exportArtifact(deps, userId, artifactId, 'pdf')).rejects.toMatchObject({
+      code: 'export_unsupported_text',
+    })
+    expect(await exportArtifact(deps, userId, artifactId, 'docx')).not.toBeNull()
   })
 })

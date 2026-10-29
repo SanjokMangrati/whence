@@ -17,6 +17,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",
     "@mozilla/readability": "^0.6.0",
+    "@pdf-lib/fontkit": "^1.1.1",
     "better-auth": "^1.7.14",
     "docx": "^9.15.0",
     "dodopayments": "^2.59.0",
@@ -25,6 +26,7 @@
     "hono": "^4.13.14",
     "linkedom": "^0.18.14",
     "notes-format": "workspace:*",
+    "pdf-lib": "^1.17.1",
     "posthog-node": "^5.57.2",
     "redact": "workspace:*"
   },
