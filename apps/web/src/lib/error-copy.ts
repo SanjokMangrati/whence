@@ -195,6 +195,7 @@ const AUTH_FAILED = {
   signUp: 'Your account was not made. Try again.',
   sendLink: 'The link was not sent. Try again.',
   setPassword: 'The password did not change. Try again.',
+  startDemo: 'The demo did not start. Try again.',
 }
 
 const AUTH_COPY: Record<string, string> = {
@@ -206,12 +207,20 @@ const AUTH_COPY: Record<string, string> = {
   PASSWORD_TOO_LONG: `The password is too long. Use ${MAX_PASSWORD_LENGTH} characters or fewer.`,
   INVALID_TOKEN: 'This link does not work. It may be old or used already.',
   EMAIL_NOT_VERIFIED: 'Confirm your email first. A new link is on its way.',
+  MISSING_RESPONSE: 'The check that you are a person did not finish. Try again.',
+  VERIFICATION_FAILED: 'The check that you are a person did not finish. Try again.',
+  DEMO_ACCOUNT_LIMIT:
+    'This network started its demo accounts for today. Sign up, or try again tomorrow.',
+  ANONYMOUS_USERS_CANNOT_SIGN_IN_AGAIN_ANONYMOUSLY:
+    'You are in a demo account already. Go to Home.',
 }
 
 export function authErrorCopy(
   action: keyof typeof AUTH_FAILED,
   error: { code?: string; status: number } | null,
 ): string {
+  const known = error?.code === undefined ? undefined : AUTH_COPY[error.code]
+  if (known !== undefined) return known
   if (error?.status === 429) return 'Too many tries. Wait 1 minute, then try again.'
-  return (error?.code !== undefined && AUTH_COPY[error.code]) || AUTH_FAILED[action]
+  return AUTH_FAILED[action]
 }

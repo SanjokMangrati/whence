@@ -7,6 +7,7 @@ const HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST
 
 interface Events {
   signed_up: Record<string, never>
+  demo_started: Record<string, never>
   source_submitted: { output_type: OutputType }
   generation_started: { output_type: OutputType }
   artifact_viewed: { artifact_type: 'notes' | 'cheat_sheet' }

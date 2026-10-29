@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { use, useState } from 'react'
+import { DemoAccount } from '@/components/demo-account'
 import { TextField } from '@/components/text-field'
 import { identify } from '@/lib/analytics'
 import { authClient } from '@/lib/auth-client'
@@ -55,6 +56,7 @@ export default function LoginPage({ searchParams }: PageProps<'/login'>) {
           Log in
         </button>
       </form>
+      <DemoAccount />
       <div className="ui-s grid gap-1 text-ink-3">
         <p>
           <Link href="/forgot-password" className="link">
