@@ -6,6 +6,10 @@ export function jobStepKey(jobId: string, step: string) {
   return `jobs/${jobId}/${step}.json`
 }
 
+export function artifactContentKey(artifactId: string) {
+  return `artifacts/${artifactId}.md`
+}
+
 export async function putText(bucket: R2Bucket, key: string, body: string) {
   await bucket.put(key, body)
 }
