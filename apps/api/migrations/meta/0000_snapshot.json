@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "3e4528ef-54f4-4d86-8263-4d45b1d1554b",
+  "id": "785b85da-3f39-4590-bcb1-07ec749fb4af",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -124,6 +124,45 @@
         }
       },
       "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "demo_signup": {
+      "name": "demo_signup",
+      "columns": {
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "day": {
+          "name": "day",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "accounts": {
+          "name": "accounts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "demo_signup_address_day_pk": {
+          "columns": [
+            "address",
+            "day"
+          ],
+          "name": "demo_signup_address_day_pk"
+        }
+      },
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
@@ -261,8 +300,8 @@
           "notNull": false,
           "autoincrement": false
         },
-        "is_demo": {
-          "name": "is_demo",
+        "is_anonymous": {
+          "name": "is_anonymous",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,

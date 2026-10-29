@@ -1,4 +1,4 @@
-import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import { index, integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
 export const user = sqliteTable('user', {
   id: text('id').primaryKey(),
@@ -6,7 +6,7 @@ export const user = sqliteTable('user', {
   email: text('email').notNull().unique(),
   emailVerified: integer('email_verified', { mode: 'boolean' }).notNull().default(false),
   image: text('image'),
-  isDemo: integer('is_demo', { mode: 'boolean' }).notNull().default(false),
+  isAnonymous: integer('is_anonymous', { mode: 'boolean' }).notNull().default(false),
   purgedAt: integer('purged_at', { mode: 'timestamp' }),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
@@ -62,4 +62,14 @@ export const verification = sqliteTable(
     updatedAt: integer('updated_at', { mode: 'timestamp' }),
   },
   (table) => [index('verification_identifier_idx').on(table.identifier)],
+)
+
+export const demoSignup = sqliteTable(
+  'demo_signup',
+  {
+    address: text('address').notNull(),
+    day: text('day').notNull(),
+    accounts: integer('accounts').notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.address, table.day] })],
 )

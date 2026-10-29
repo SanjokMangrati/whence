@@ -2,7 +2,7 @@ import type { Context, Env as HonoEnv } from 'hono'
 import { createMiddleware } from 'hono/factory'
 import { requestError } from '../routes/errors'
 
-type Limiter = { [Key in keyof Env]: Env[Key] extends RateLimit ? Key : never }[keyof Env]
+type Limiter = { [Key in keyof Env]-?: Env[Key] extends RateLimit ? Key : never }[keyof Env]
 
 export function rateLimit<E extends HonoEnv & { Bindings: Env }>(
   limiter: Limiter,

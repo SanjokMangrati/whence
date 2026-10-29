@@ -37,6 +37,7 @@
           "RESEND_API_KEY",
           "MAIL_FROM",
           "POSTHOG_KEY",
+          "TURNSTILE_SECRET_KEY",
         ],
       },
     },

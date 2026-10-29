@@ -16,6 +16,13 @@ CREATE TABLE `account` (
 );
 
 CREATE INDEX `account_user_id_idx` ON `account` (`user_id`);
+CREATE TABLE `demo_signup` (
+	`address` text NOT NULL,
+	`day` text NOT NULL,
+	`accounts` integer NOT NULL,
+	PRIMARY KEY(`address`, `day`)
+);
+
 CREATE TABLE `session` (
 	`id` text PRIMARY KEY NOT NULL,
 	`user_id` text NOT NULL,
@@ -36,7 +43,7 @@ CREATE TABLE `user` (
 	`email` text NOT NULL,
 	`email_verified` integer DEFAULT false NOT NULL,
 	`image` text,
-	`is_demo` integer DEFAULT false NOT NULL,
+	`is_anonymous` integer DEFAULT false NOT NULL,
 	`purged_at` integer,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL
