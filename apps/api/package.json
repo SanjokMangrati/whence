@@ -15,10 +15,12 @@
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
+    "@mozilla/readability": "^0.6.0",
     "better-auth": "^1.7.14",
     "drizzle-orm": "^0.45.4",
     "entitlements": "workspace:*",
     "hono": "^4.13.14",
+    "linkedom": "^0.18.14",
     "posthog-node": "^5.57.2",
     "redact": "workspace:*"
   },
