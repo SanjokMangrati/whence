@@ -12,6 +12,7 @@ export default defineConfig(async () => {
         miniflare: {
           bindings: {
             TEST_MIGRATIONS: migrations,
+            KEY_ENCRYPTION_SECRET: 'MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=',
             BETTER_AUTH_SECRET: 'test-only-secret-not-used-outside-vitest',
             BETTER_AUTH_URL: 'https://example.com',
             RESEND_API_KEY: 'test-only-key',

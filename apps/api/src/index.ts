@@ -4,11 +4,15 @@ import { clientAddress, rateLimit } from './middleware/rate-limit'
 import { requireSession, type AppEnv } from './middleware/session'
 import { errorReporterFromEnv } from './providers/posthog/error-reporter'
 import { requestError } from './routes/errors'
+import { providerKey } from './routes/provider-key'
 
-const api = new Hono<AppEnv>().use(requireSession).get('/me', (c) => {
-  const user = c.get('user')
-  return c.json({ id: user.id, email: user.email })
-})
+const api = new Hono<AppEnv>()
+  .use(requireSession)
+  .get('/me', (c) => {
+    const user = c.get('user')
+    return c.json({ id: user.id, email: user.email })
+  })
+  .route('/me/provider-key', providerKey)
 
 const app = new Hono<{ Bindings: Env; Variables: Partial<AppEnv['Variables']> }>()
   .post('/api/auth/*', rateLimit('AUTH_LIMITER', clientAddress))

@@ -1,6 +1,7 @@
 import type { Context } from 'hono'
 
 const REQUEST_STATUS = {
+  invalid_request: 400,
   unauthorized: 401,
   not_found: 404,
   rate_limited: 429,

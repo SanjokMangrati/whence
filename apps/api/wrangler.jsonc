@@ -12,6 +12,7 @@
   "vars": { "POSTHOG_HOST": "https://eu.i.posthog.com" },
   "secrets": {
     "required": [
+      "KEY_ENCRYPTION_SECRET",
       "BETTER_AUTH_SECRET",
       "BETTER_AUTH_URL",
       "RESEND_API_KEY",
@@ -32,6 +33,7 @@
       "vars": { "POSTHOG_HOST": "https://eu.i.posthog.com" },
       "secrets": {
         "required": [
+          "KEY_ENCRYPTION_SECRET",
           "BETTER_AUTH_SECRET",
           "BETTER_AUTH_URL",
           "RESEND_API_KEY",

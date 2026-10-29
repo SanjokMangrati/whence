@@ -43,6 +43,7 @@ describe('provider key repository', () => {
 
   it('reads the key of the user who owns the job', async () => {
     expect(await findProviderKeyForJob(db, ownerJob)).toEqual({
+      userId: owner,
       ciphertext: 'owner-ciphertext',
       iv: 'owner-iv',
     })
@@ -57,6 +58,7 @@ describe('provider key repository', () => {
       createdAt: new Date(),
     })
     expect(await findProviderKeyForJob(db, ownerJob)).toEqual({
+      userId: owner,
       ciphertext: 'new-ciphertext',
       iv: 'new-iv',
     })

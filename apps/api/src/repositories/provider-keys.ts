@@ -25,7 +25,7 @@ export async function findProviderKeyHintForUser(db: Database, userId: string) {
 
 export async function findProviderKeyForJob(db: Database, jobId: string) {
   const [row] = await db
-    .select({ ciphertext: providerKey.ciphertext, iv: providerKey.iv })
+    .select({ userId: providerKey.userId, ciphertext: providerKey.ciphertext, iv: providerKey.iv })
     .from(generationJob)
     .innerJoin(providerKey, eq(providerKey.userId, generationJob.userId))
     .where(eq(generationJob.id, jobId))

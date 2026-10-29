@@ -4,6 +4,7 @@ export const DOMAIN_ERROR_CODES = [
   'source_too_long',
   'captions_unavailable',
   'extraction_failed',
+  'provider_key_required',
   'generation_failed',
   'verifier_request_failed',
   'verification_failed',
