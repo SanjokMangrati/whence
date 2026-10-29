@@ -8,6 +8,7 @@ import { artifacts } from './routes/artifacts'
 import { requestError } from './routes/errors'
 import { generations } from './routes/generations'
 import { providerKey } from './routes/provider-key'
+import { study } from './routes/study'
 import { readPlanUsage } from './services/plans'
 
 const api = new Hono<AppEnv>()
@@ -20,6 +21,7 @@ const api = new Hono<AppEnv>()
   .route('/me/provider-key', providerKey)
   .route('/generations', generations)
   .route('/artifacts', artifacts)
+  .route('/study', study)
 
 const app = new Hono<{ Bindings: Env; Variables: Partial<AppEnv['Variables']> }>()
   .post('/api/auth/*', rateLimit('AUTH_LIMITER', clientAddress))
