@@ -1,6 +1,6 @@
-import { ENTITLEMENTS, type Plan } from 'entitlements'
+import { ENTITLEMENTS, type Plan, type QuotaPeriod } from 'entitlements'
 
-export type { Plan }
+export type { Plan, QuotaPeriod }
 
 const MINUTE_MS = 60_000
 
