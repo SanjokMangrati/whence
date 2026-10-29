@@ -15,6 +15,7 @@
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
+    "better-auth": "^1.7.14",
     "drizzle-orm": "^0.45.4",
     "entitlements": "workspace:*",
     "hono": "^4.13.14",

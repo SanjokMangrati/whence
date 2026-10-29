@@ -9,7 +9,20 @@ export default defineConfig(async () => {
     plugins: [
       cloudflareTest({
         wrangler: { configPath: './wrangler.jsonc' },
-        miniflare: { bindings: { TEST_MIGRATIONS: migrations, POSTHOG_KEY: '' } },
+        miniflare: {
+          bindings: {
+            TEST_MIGRATIONS: migrations,
+            BETTER_AUTH_SECRET: 'test-only-secret-not-used-outside-vitest',
+            BETTER_AUTH_URL: 'https://example.com',
+            RESEND_API_KEY: 'test-only-key',
+            MAIL_FROM: 'Whence <mail@example.test>',
+            POSTHOG_KEY: '',
+          },
+          outboundService: (request) =>
+            new URL(request.url).hostname === 'api.resend.com'
+              ? Response.json({ id: 'test-email' })
+              : fetch(request),
+        },
       }),
     ],
     test: { setupFiles: ['./src/test/setup.ts'] },
