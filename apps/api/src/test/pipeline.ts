@@ -131,8 +131,11 @@ export async function draftsFrom(
 }
 
 export async function committedPipelineJob(owner?: string) {
+  return commitPipelineJob(await insertPipelineJob(owner))
+}
+
+export async function commitPipelineJob(job: PipelineJob) {
   const db = createDb(env.DB)
-  const job = await insertPipelineJob(owner)
   await draftsFrom(job, [NOTES_JSON, QA_JSON])
   await verifyDrafts(
     {
