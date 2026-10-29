@@ -26,3 +26,7 @@ export async function findJson<T>(bucket: R2Bucket, key: string): Promise<T | un
   const object = await bucket.get(key)
   return object === null ? undefined : ((await object.json()) as T)
 }
+
+export async function getJson<T>(bucket: R2Bucket, key: string): Promise<T> {
+  return JSON.parse(await getText(bucket, key)) as T
+}
