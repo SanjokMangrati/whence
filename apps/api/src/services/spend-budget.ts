@@ -1,5 +1,6 @@
 import type { Database } from '../db/client'
 import { DomainError } from '../domain/errors'
+import { utcMonthOf } from '../domain/usage'
 import { findJson, jobStepKey, putJson } from '../repositories/blobs'
 import { claimDemoTranscriptCredit, claimDemoVerifierBudget } from '../repositories/demo-budget'
 
@@ -43,7 +44,7 @@ export function demoSpendBudget(
     transcriptCredits: config.transcriptCredits,
     verifierMicroUsd: config.verifierMicroUsd,
   }
-  const period = () => new Date().toISOString().slice(0, 7)
+  const period = () => utcMonthOf(new Date())
 
   async function claimOnce(key: string, claim: () => Promise<boolean>, message: string) {
     if ((await findJson<true>(bucket, key)) !== undefined) return

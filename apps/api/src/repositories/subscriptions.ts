@@ -1,12 +1,25 @@
 import { and, eq, isNull, lte, or, sql } from 'drizzle-orm'
 import type { InferInsertModel } from 'drizzle-orm'
 import type { Database } from '../db/client'
-import { subscription } from '../db/schema'
+import { subscription, user } from '../db/schema'
 
 export type NewSubscription = InferInsertModel<typeof subscription>
 
 export async function findSubscriptionForUser(db: Database, userId: string) {
   const [row] = await db.select().from(subscription).where(eq(subscription.userId, userId))
+  return row
+}
+
+export async function findPlanStateForUser(db: Database, userId: string) {
+  const [row] = await db
+    .select({
+      isAnonymous: user.isAnonymous,
+      tier: subscription.tier,
+      status: subscription.status,
+    })
+    .from(user)
+    .leftJoin(subscription, eq(subscription.userId, user.id))
+    .where(eq(user.id, userId))
   return row
 }
 

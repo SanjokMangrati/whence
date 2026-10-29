@@ -14,6 +14,13 @@ export const DOMAIN_ERROR_CODES = [
 
 export type DomainErrorCode = (typeof DOMAIN_ERROR_CODES)[number]
 
+export const FREE_FAILURE_CODES: readonly DomainErrorCode[] = [
+  'unsupported_source',
+  'private_address',
+  'source_too_long',
+  'demo_budget_exhausted',
+]
+
 export class DomainError extends Error {
   constructor(
     readonly code: DomainErrorCode,

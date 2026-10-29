@@ -1,7 +1,12 @@
 import { NonRetryableError } from 'cloudflare:workflows'
 import { ENTITLEMENTS, type Plan } from 'entitlements'
 import type { Database } from '../db/client'
-import { DOMAIN_ERROR_CODES, DomainError, type DomainErrorCode } from '../domain/errors'
+import {
+  DOMAIN_ERROR_CODES,
+  DomainError,
+  FREE_FAILURE_CODES,
+  type DomainErrorCode,
+} from '../domain/errors'
 import { updateGenerationJobStage, type GenerationStage } from '../repositories/generation-jobs'
 import { insertGenerationMetric } from '../repositories/generation-metrics'
 import {
@@ -20,13 +25,6 @@ const PERMANENT_CODES = new Set<DomainErrorCode>([
   'too_many_claims',
   'demo_budget_exhausted',
 ])
-
-const FREE_CODES: DomainErrorCode[] = [
-  'unsupported_source',
-  'private_address',
-  'source_too_long',
-  'demo_budget_exhausted',
-]
 
 const CODED_MESSAGE = /^(?:\w*Error: )*([a-z_]+): ([\s\S]*)$/
 
@@ -63,7 +61,7 @@ export async function recordFailure(db: Database, input: FailureInput) {
     errorMessage: failure.message,
     updatedAt: now,
   })
-  if (FREE_CODES.includes(failure.code)) {
+  if (FREE_FAILURE_CODES.includes(failure.code)) {
     await deleteUsageRecordForJob(db, input.jobId)
   } else {
     await returnUsageRecordForFailedJob(db, {
