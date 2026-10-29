@@ -1,0 +1,81 @@
+import { NonRetryableError } from 'cloudflare:workflows'
+import { ENTITLEMENTS, type Plan } from 'entitlements'
+import type { Database } from '../db/client'
+import { DOMAIN_ERROR_CODES, DomainError, type DomainErrorCode } from '../domain/errors'
+import { updateGenerationJobStage, type GenerationStage } from '../repositories/generation-jobs'
+import { insertGenerationMetric } from '../repositories/generation-metrics'
+import {
+  deleteUsageRecordForJob,
+  returnUsageRecordForFailedJob,
+} from '../repositories/usage-records'
+import { metricRow, type Measures } from './metrics'
+
+const PERMANENT_CODES = new Set<DomainErrorCode>([
+  'unsupported_source',
+  'private_address',
+  'source_too_long',
+  'captions_unavailable',
+  'provider_key_required',
+  'verification_failed',
+  'too_many_claims',
+])
+
+const FREE_CODES: DomainErrorCode[] = ['unsupported_source', 'private_address', 'source_too_long']
+
+export async function permanentAware<T>(run: () => Promise<T>): Promise<T> {
+  try {
+    return await run()
+  } catch (error) {
+    if (!(error instanceof DomainError)) throw error
+    const message = `${error.code}: ${error.message}`
+    throw PERMANENT_CODES.has(error.code) ? new NonRetryableError(message) : new Error(message)
+  }
+}
+
+export interface FailureInput {
+  jobId: string
+  plan: Plan
+  stage: GenerationStage
+  measures: Measures
+  error: unknown
+}
+
+export async function recordFailure(db: Database, input: FailureInput) {
+  const failure = toFailure(input.error)
+  const now = new Date()
+
+  await updateGenerationJobStage(db, input.jobId, {
+    status: 'failed',
+    stage: input.stage,
+    errorCode: failure.code,
+    errorMessage: failure.message,
+    updatedAt: now,
+  })
+  if (FREE_CODES.includes(failure.code)) {
+    await deleteUsageRecordForJob(db, input.jobId)
+  } else {
+    await returnUsageRecordForFailedJob(db, {
+      jobId: input.jobId,
+      limit: ENTITLEMENTS[input.plan].failedSourcesReturnedPerPeriod,
+      now,
+    })
+  }
+  await insertGenerationMetric(db, metricRow(input.jobId, input.measures, now, input.stage))
+
+  return failure
+}
+
+export function toFailure(error: unknown): { code: DomainErrorCode; message: string } {
+  if (error instanceof DomainError) {
+    return { code: error.code, message: error.message }
+  }
+  const message = error instanceof Error ? error.message : String(error)
+  for (const code of DOMAIN_ERROR_CODES) {
+    const prefix = `${code}: `
+    const at = message.indexOf(prefix)
+    if (at !== -1) {
+      return { code, message: message.slice(at + prefix.length) }
+    }
+  }
+  return { code: 'generation_failed', message }
+}
