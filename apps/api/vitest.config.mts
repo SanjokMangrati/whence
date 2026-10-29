@@ -21,6 +21,9 @@ export default defineConfig(async () => {
             RESEND_API_KEY: 'test-only-key',
             MAIL_FROM: 'Whence <mail@example.test>',
             POSTHOG_KEY: '',
+            DODO_API_KEY: 'test-only-key',
+            DODO_WEBHOOK_KEY: 'whsec_dGVzdC1vbmx5LWRvZG8td2ViaG9vay1zZWNyZXQh',
+            DODO_PRO_PRODUCT_ID: 'pdt_test_pro',
           },
           outboundService: (request) =>
             new URL(request.url).hostname === 'api.resend.com'

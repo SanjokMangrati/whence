@@ -4,6 +4,7 @@ import { DomainError, ExportError, PlanError } from '../domain/errors'
 const REQUEST_STATUS = {
   invalid_request: 400,
   unauthorized: 401,
+  invalid_signature: 401,
   not_found: 404,
   rate_limited: 429,
   internal_error: 500,

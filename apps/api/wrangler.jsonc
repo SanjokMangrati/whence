@@ -22,6 +22,11 @@
       "namespace_id": "1002",
       "simple": { "limit": 10, "period": 60 },
     },
+    {
+      "name": "WEBHOOK_LIMITER",
+      "namespace_id": "1003",
+      "simple": { "limit": 120, "period": 60 },
+    },
   ],
   "vars": {
     "POSTHOG_HOST": "https://eu.i.posthog.com",
@@ -29,6 +34,7 @@
     "GENERATOR_INPUT_USD_PER_MTOK": 1,
     "GENERATOR_OUTPUT_USD_PER_MTOK": 5,
     "DAILY_SOURCE_LIMIT": 40,
+    "DODO_ENVIRONMENT": "live_mode",
   },
   "secrets": {
     "required": [
@@ -42,6 +48,9 @@
       "RESEND_API_KEY",
       "MAIL_FROM",
       "POSTHOG_KEY",
+      "DODO_API_KEY",
+      "DODO_WEBHOOK_KEY",
+      "DODO_PRO_PRODUCT_ID",
     ],
   },
   "observability": {
@@ -66,6 +75,11 @@
           "namespace_id": "2002",
           "simple": { "limit": 10, "period": 60 },
         },
+        {
+          "name": "WEBHOOK_LIMITER",
+          "namespace_id": "2003",
+          "simple": { "limit": 120, "period": 60 },
+        },
       ],
       "vars": {
         "POSTHOG_HOST": "https://eu.i.posthog.com",
@@ -73,6 +87,7 @@
         "GENERATOR_INPUT_USD_PER_MTOK": 1,
         "GENERATOR_OUTPUT_USD_PER_MTOK": 5,
         "DAILY_SOURCE_LIMIT": 40,
+        "DODO_ENVIRONMENT": "test_mode",
         "DEMO_TRANSCRIPT_CREDITS": 90,
         "DEMO_VERIFIER_MICRO_USD": 10000000,
         "DEMO_VERIFIER_MICRO_USD_PER_CALL": 100,
@@ -88,6 +103,9 @@
           "RESEND_API_KEY",
           "MAIL_FROM",
           "POSTHOG_KEY",
+          "DODO_API_KEY",
+          "DODO_WEBHOOK_KEY",
+          "DODO_PRO_PRODUCT_ID",
           "TURNSTILE_SECRET_KEY",
         ],
       },
