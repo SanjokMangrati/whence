@@ -44,7 +44,7 @@ export const study = new Hono<AppEnv>()
     const reviews = await listMonthReviews(
       createDb(c.env.DB),
       c.get('user').id,
-      c.req.valid('query'),
+      c.req.valid('query').month,
       new Date(),
     )
     return c.json({ reviews })
@@ -82,7 +82,7 @@ function parseMonth(query: Record<string, string | string[]>) {
   const match = typeof query.month === 'string' ? /^(\d{4})-(\d{2})$/.exec(query.month) : null
   if (match === null) return null
   const [year, month] = [Number(match[1]), Number(match[2])]
-  return month >= 1 && month <= 12 ? { year, month } : null
+  return month >= 1 && month <= 12 ? { month: { year, month } } : null
 }
 
 function parseReminders(body: unknown): { enabled: boolean } | null {
