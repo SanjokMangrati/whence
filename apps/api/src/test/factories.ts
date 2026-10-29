@@ -1,5 +1,6 @@
 import type { Database } from '../db/client'
 import { artifact, generationJob, qaItem, source, user } from '../db/schema'
+import type { ArtifactType } from '../domain/types'
 
 export async function insertTestUser(db: Database) {
   const id = crypto.randomUUID()
@@ -51,12 +52,13 @@ export async function insertTestJob(
 export async function insertTestArtifact(
   db: Database,
   owner: { userId: string; jobId: string; sourceId: string },
+  artifactType: ArtifactType = 'notes',
 ) {
   const id = crypto.randomUUID()
   await db.insert(artifact).values({
     id,
     ...owner,
-    artifactType: 'notes',
+    artifactType,
     promptVersion: 'v1',
     modelId: 'test-model',
     contentR2Key: `artifacts/${id}.md`,
