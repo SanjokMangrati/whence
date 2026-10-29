@@ -26,6 +26,9 @@ importers:
       better-auth:
         specifier: ^1.7.14
         version: 1.7.14(@opentelemetry/api@1.10.0)(drizzle-kit@0.31.11)(drizzle-orm@0.45.4(@opentelemetry/api@1.10.0)(kysely@0.29.7))(next@16.4.3(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@types/node@24.19.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(vitest@5.0.5(@opentelemetry/api@1.10.0)(@types/node@24.19.2)(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(terser@5.36.0)(tsx@4.23.15)(yaml@2.9.1)))
+      dodopayments:
+        specifier: ^2.59.0
+        version: 2.59.0
       drizzle-orm:
         specifier: ^0.45.4
         version: 0.45.4(@opentelemetry/api@1.10.0)(kysely@0.29.7)
@@ -54,6 +57,9 @@ importers:
       eslint:
         specifier: ^9.39.5
         version: 9.39.5(supports-color@10.2.2)
+      standardwebhooks:
+        specifier: ^1.1.1
+        version: 1.1.1
       typescript:
         specifier: ~6.0.3
         version: 6.0.3
@@ -2363,6 +2369,10 @@ packages:
   doctrine@2.1.0:
     resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
     engines: {node: '>=0.10.0'}
+
+  dodopayments@2.59.0:
+    resolution: {integrity: sha512-hJUfgPis3ug1beOgl31rbj7W5A2+WmM3t/JnfTxdLELBuopNe1bV/kGpTgVuLJpRRuQ7fpmGyaJTS0A5/tVh0w==}
+    hasBin: true
 
   dom-serializer@2.0.0:
     resolution: {integrity: sha512-wIkAryiqt/nV5EQKqQpo3SToSOV9J0DnbJqwK7Wv/Trc92zIAYZ4FlMu+JPFW1DfGFt81ZTCGgDEabffXeLyJg==}
@@ -6455,6 +6465,10 @@ snapshots:
   doctrine@2.1.0:
     dependencies:
       esutils: 2.0.3
+
+  dodopayments@2.59.0:
+    dependencies:
+      standardwebhooks: 1.1.1
 
   dom-serializer@2.0.0:
     dependencies:
