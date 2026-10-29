@@ -13,6 +13,7 @@ const SECURITY_HEADERS = [
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  transpilePackages: ['entitlements'],
   async headers() {
     return [{ source: '/:path*', headers: SECURITY_HEADERS }]
   },

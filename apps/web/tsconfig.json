@@ -18,7 +18,9 @@
     "**/*.tsx",
     "**/*.mts",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
+    ".next/dev/types/**/*.ts",
+    "../api/worker-configuration.d.ts",
+    "../api/src/fonts.d.ts"
   ],
   "exclude": ["node_modules"]
 }
