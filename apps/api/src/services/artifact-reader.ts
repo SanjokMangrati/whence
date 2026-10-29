@@ -3,6 +3,7 @@ import { findArtifactForUser } from '../repositories/artifacts'
 import { getText, sourceTextKey } from '../repositories/blobs'
 import { listCitationsByOwner } from '../repositories/citations'
 import { findGenerationJobForUser } from '../repositories/generation-jobs'
+import { findQaItemForUser } from '../repositories/qa-items'
 import { findSourceById, listSpansForSource } from '../repositories/sources'
 
 export interface ReaderDeps {
@@ -48,6 +49,21 @@ export async function readJobSource(deps: ReaderDeps, userId: string, jobId: str
       endMs: span.endMs,
       text: text.slice(span.charStart, span.charEnd),
     })),
+  }
+}
+
+export async function readQaItem(deps: ReaderDeps, userId: string, qaItemId: string) {
+  const row = await findQaItemForUser(deps.db, userId, qaItemId)
+  if (row === undefined) return null
+  return {
+    id: row.id,
+    question: row.question,
+    answer: row.answer,
+    citations: await resolveAnchors(
+      deps,
+      row.sourceId,
+      await listCitationsByOwner(deps.db, 'qa_item', row.id),
+    ),
   }
 }
 

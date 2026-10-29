@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { createDb } from '../db/client'
 import { insertTestUser } from '../test/factories'
 import { committedPipelineJob } from '../test/pipeline'
-import { readArtifact, readJobSource } from './artifact-reader'
+import { readArtifact, readJobSource, readQaItem } from './artifact-reader'
 
 const deps = { db: createDb(env.DB), bucket: env.BUCKET }
 
@@ -43,8 +43,20 @@ describe('artifact reader', () => {
     ])
   })
 
+  it('reads the answer of a question with its citation', async () => {
+    const view = await readQaItem(deps, job.userId, job.qaItemIds[0]!)
+
+    expect(view).toMatchObject({
+      answer: 'The interval grows after each successful review.',
+      citations: [
+        { spanId: job.spanIds[1], text: 'The interval grows after each successful review.' },
+      ],
+    })
+  })
+
   it('returns nothing to another user', async () => {
     expect(await readArtifact(deps, strangerId, job.artifactIds[0]!)).toBeNull()
     expect(await readJobSource(deps, strangerId, job.jobId)).toBeNull()
+    expect(await readQaItem(deps, strangerId, job.qaItemIds[0]!)).toBeNull()
   })
 })
