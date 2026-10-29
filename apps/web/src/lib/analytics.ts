@@ -15,6 +15,7 @@ interface Events {
   recall_rated: { rating: 'again' | 'hard' | 'good' | 'easy' }
   question_removed: Record<string, never>
   reminders_enabled: Record<string, never>
+  provider_key_saved: Record<string, never>
   checkout_opened: Record<string, never>
   subscription_changed: { change: 'cancel' | 'resume' }
   landing_link_submitted: Record<string, never>

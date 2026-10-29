@@ -171,6 +171,8 @@ const ACTION_FAILED = {
   remove: 'The question was not removed. Try again.',
   delete: 'The source was not deleted. Try again.',
   dates: 'The dates did not load. Try again.',
+  saveKey: 'The key was not saved. Try again.',
+  deleteKey: 'The key was not deleted. Try again.',
 }
 
 export type Action = keyof typeof ACTION_FAILED

@@ -25,6 +25,7 @@ export function ErrorPanel({ code, plan, counted = false, retry, onPasteAnother 
   const canRetry = copy.actions.includes('retry') && retry !== undefined
   const canPaste = copy.actions.includes('paste')
   const canLogIn = copy.actions.includes('log_in')
+  const canAddKey = copy.actions.includes('add_key')
 
   async function tryAgain(request: NonNullable<Props['retry']>) {
     setPending(true)
@@ -45,7 +46,7 @@ export function ErrorPanel({ code, plan, counted = false, retry, onPasteAnother 
         <h2 className="display-m">{copy.heading}</h2>
         <p className="ui-m max-w-[62ch] text-ink-2">{copy.body}</p>
       </Outcome>
-      {(canRetry || canPaste || canLogIn) && (
+      {(canRetry || canPaste || canLogIn || canAddKey) && (
         <div className="mt-2 flex flex-wrap gap-2">
           {canRetry && (
             <button
@@ -70,6 +71,11 @@ export function ErrorPanel({ code, plan, counted = false, retry, onPasteAnother 
           {canLogIn && (
             <Link href="/login" className="btn btn-primary">
               Log in
+            </Link>
+          )}
+          {canAddKey && (
+            <Link href="/settings" className="btn btn-primary">
+              Add your key
             </Link>
           )}
         </div>
