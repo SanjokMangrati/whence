@@ -2,6 +2,7 @@ import { env } from 'cloudflare:workers'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createDb } from '../db/client'
 import { updateGenerationJobStage } from '../repositories/generation-jobs'
+import { insertGenerationMetric } from '../repositories/generation-metrics'
 import { saveReviewSchedule } from '../repositories/review-schedules'
 import { returnUsageRecordForFailedJob } from '../repositories/usage-records'
 import {
@@ -11,6 +12,7 @@ import {
   insertTestSource,
   insertTestUser,
 } from '../test/factories'
+import { metricRow, NO_COUNTS } from '../workflows/metrics'
 import { deleteGeneration, listGenerations, readGenerationStatus } from './generations'
 import { reserveSourceSlot } from './quota'
 
@@ -79,7 +81,7 @@ describe('generations', () => {
     const types = (await listGenerations(db, ownerId)).map((row) => [row.id, row.sourceType])
 
     expect(Object.fromEntries(types)).toEqual({ [article]: 'article', [video]: 'video' })
-    expect(await readGenerationStatus(db, ownerId, video)).toMatchObject({
+    expect(await readGenerationStatus(db, ownerId, video, false)).toMatchObject({
       sourceType: 'video',
       title: null,
     })
@@ -93,9 +95,35 @@ describe('generations', () => {
     }
     await returnUsageRecordForFailedJob(db, { jobId: returned, limit: 3, now: new Date() })
 
-    expect(await readGenerationStatus(db, ownerId, kept)).toMatchObject({ countsTowardQuota: true })
-    expect(await readGenerationStatus(db, ownerId, returned)).toMatchObject({
+    expect(await readGenerationStatus(db, ownerId, kept, false)).toMatchObject({
+      countsTowardQuota: true,
+    })
+    expect(await readGenerationStatus(db, ownerId, returned, false)).toMatchObject({
       countsTowardQuota: false,
+    })
+  })
+
+  it('shows the cost of a job only when the user key paid for it', async () => {
+    const jobId = await insertTestJob(db, ownerId, sourceId)
+    const unmeasured = await insertTestJob(db, ownerId, sourceId)
+    await insertGenerationMetric(
+      db,
+      metricRow(
+        jobId,
+        {
+          modelId: 'test-model',
+          usage: { inputTokens: 1_000, outputTokens: 500, costUsd: 0.042 },
+          stageDurationsMs: {},
+          counts: NO_COUNTS,
+        },
+        new Date(),
+      ),
+    )
+
+    expect(await readGenerationStatus(db, ownerId, jobId, true)).toMatchObject({ costUsd: 0.042 })
+    expect(await readGenerationStatus(db, ownerId, jobId, false)).toMatchObject({ costUsd: null })
+    expect(await readGenerationStatus(db, ownerId, unmeasured, true)).toMatchObject({
+      costUsd: null,
     })
   })
 
@@ -105,7 +133,7 @@ describe('generations', () => {
     const strangerId = await insertTestUser(db)
 
     expect(await listGenerations(db, strangerId)).toEqual([])
-    expect(await readGenerationStatus(db, strangerId, jobId)).toBeNull()
+    expect(await readGenerationStatus(db, strangerId, jobId, false)).toBeNull()
   })
 
   it('removes a job for its owner only', async () => {
@@ -115,6 +143,6 @@ describe('generations', () => {
     expect(await deleteGeneration(db, strangerId, jobId)).toBe(false)
     expect(await deleteGeneration(db, ownerId, jobId)).toBe(true)
     expect(await listGenerations(db, ownerId)).toEqual([])
-    expect(await readGenerationStatus(db, ownerId, jobId)).toBeNull()
+    expect(await readGenerationStatus(db, ownerId, jobId, false)).toBeNull()
   })
 })

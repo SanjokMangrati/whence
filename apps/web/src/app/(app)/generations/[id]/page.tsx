@@ -45,6 +45,7 @@ export default async function GenerationPage({ params }: PageProps<'/generations
       questions={questions}
       plan={me.plan}
       collections={collections}
+      costUsd={status.costUsd}
     />
   )
 }

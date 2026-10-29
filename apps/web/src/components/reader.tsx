@@ -78,6 +78,7 @@ export function Reader({
   questions,
   plan,
   collections,
+  costUsd,
 }: {
   jobId: string
   artifacts: Artifact[]
@@ -85,6 +86,7 @@ export function Reader({
   questions: Question[]
   plan: Plan
   collections: { id: string; name: string; jobIds: string[] }[]
+  costUsd: number | null
 }) {
   const [selected, setSelected] = useState<{
     line: string | null
@@ -141,6 +143,7 @@ export function Reader({
           <div className="grid min-w-0 gap-4">
             <div className="flex flex-wrap items-center gap-2">
               {label !== null && <Tag>{label}</Tag>}
+              {costUsd !== null && <Tag>{costOnKey(costUsd)}</Tag>}
               <a
                 href={source.source.url}
                 target="_blank"
@@ -496,4 +499,9 @@ export function Reader({
       </div>
     </main>
   )
+}
+
+function costOnKey(costUsd: number): string {
+  if (costUsd > 0 && costUsd < 0.01) return 'Under $0.01 on your key'
+  return `$${costUsd.toFixed(2)} on your key`
 }

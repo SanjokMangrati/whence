@@ -6,6 +6,7 @@ import {
   findGenerationJobForUser,
   listGenerationJobsForUser,
 } from '../repositories/generation-jobs'
+import { findGenerationCostForJob } from '../repositories/generation-metrics'
 import { countQaItemsByJobForUser } from '../repositories/qa-items'
 import { listNextReviewsByJobForUser } from '../repositories/review-schedules'
 import { findSourceById } from '../repositories/sources'
@@ -37,14 +38,20 @@ export async function listGenerations(db: Database, userId: string) {
   }))
 }
 
-export async function readGenerationStatus(db: Database, userId: string, jobId: string) {
+export async function readGenerationStatus(
+  db: Database,
+  userId: string,
+  jobId: string,
+  userKeyPays: boolean,
+) {
   const job = await findGenerationJobForUser(db, userId, jobId)
   if (job === undefined) return null
 
-  const [artifacts, source, counted] = await Promise.all([
+  const [artifacts, source, counted, costUsd] = await Promise.all([
     listArtifactsForUserJob(db, userId, job.id),
     job.sourceId === null ? undefined : findSourceById(db, job.sourceId),
     job.status === 'failed' ? hasOpenUsageRecordForJob(db, job.id) : true,
+    userKeyPays ? findGenerationCostForJob(db, job.id) : null,
   ])
   return {
     id: job.id,
@@ -56,6 +63,7 @@ export async function readGenerationStatus(db: Database, userId: string, jobId: 
     stage: job.stage,
     errorCode: job.errorCode,
     countsTowardQuota: counted,
+    costUsd,
     artifacts: artifacts.map((row) => ({ id: row.id, artifactType: row.artifactType })),
   }
 }

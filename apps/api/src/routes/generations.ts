@@ -43,6 +43,7 @@ export const generations = new Hono<AppEnv>()
       createDb(c.env.DB),
       c.get('user').id,
       c.req.param('id'),
+      c.env.ANTHROPIC_API_KEY === undefined,
     )
     return status === null ? requestError(c, 'not_found') : c.json(status)
   })
