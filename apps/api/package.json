@@ -1,0 +1,24 @@
+{
+  "name": "api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "wrangler deploy --dry-run --env=\"\" --outdir dist",
+    "deploy": "wrangler deploy --env=\"\"",
+    "deploy:demo": "wrangler deploy --env demo",
+    "cf-typegen": "wrangler types",
+    "lint": "eslint src",
+    "typecheck": "wrangler types && tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4.13.14"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.5",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.1",
+    "wrangler": "^4.154.0"
+  }
+}
