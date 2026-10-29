@@ -10,7 +10,10 @@ import { UNBOUNDED_BUDGET } from '../services/spend-budget'
 import type { DraftSet } from '../workflows/drafts'
 import { checkConcepts } from '../workflows/steps/check-concepts'
 import { extractConcepts } from '../workflows/steps/concepts'
+import { NO_COUNTS } from '../workflows/metrics'
+import { commitGeneration } from '../workflows/steps/commit'
 import { generateDrafts } from '../workflows/steps/generate'
+import { verifyDrafts } from '../workflows/steps/verify'
 import { insertTestJob, insertTestUser } from './factories'
 import { fakeGenerator } from './generator'
 
@@ -89,9 +92,9 @@ export function fakeVerifier(
 
 export const supportsAll = () => fakeVerifier(() => true)
 
-export async function insertPipelineJob() {
+export async function insertPipelineJob(owner?: string) {
   const db = createDb(env.DB)
-  const userId = await insertTestUser(db)
+  const userId = owner ?? (await insertTestUser(db))
   const url = `https://example.com/post/${crypto.randomUUID()}`
   const { sourceId } = await buildCanonicalSource(db, env.BUCKET, {
     url,
@@ -125,6 +128,36 @@ export async function draftsFrom(
     { db: createDb(env.DB), bucket: env.BUCKET, generator: fakeGenerator(answers) },
     { ...job, outputType },
   )
+}
+
+export async function committedPipelineJob(owner?: string) {
+  const db = createDb(env.DB)
+  const job = await insertPipelineJob(owner)
+  await draftsFrom(job, [NOTES_JSON, QA_JSON])
+  await verifyDrafts(
+    {
+      db,
+      bucket: env.BUCKET,
+      generator: fakeGenerator([]),
+      verifier: supportsAll(),
+      budget: UNBOUNDED_BUDGET,
+    },
+    job,
+  )
+  const committed = await commitGeneration(
+    { db, bucket: env.BUCKET },
+    {
+      ...job,
+      configuredModelId: 'test-model',
+      measures: {
+        modelId: 'test-model',
+        usage: { inputTokens: 300, outputTokens: 150, costUsd: 0.003 },
+        stageDurationsMs: {},
+        counts: NO_COUNTS,
+      },
+    },
+  )
+  return { ...job, ...committed }
 }
 
 export function readDrafts(jobId: string, step: 'drafts' | 'verified') {
