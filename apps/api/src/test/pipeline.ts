@@ -1,12 +1,17 @@
 import { env } from 'cloudflare:workers'
 import { createDb } from '../db/client'
 import type { ClaimVerification, ClaimVerifier } from '../domain/ports'
-import type { Concept } from '../domain/types'
+import type { Concept, OutputType } from '../domain/types'
 import { extractFromHtml } from '../providers/readability/article-extractor'
 import { getJson, jobStepKey } from '../repositories/blobs'
 import { listSpansForSource } from '../repositories/sources'
 import { buildCanonicalSource } from '../services/canonical-source'
+import type { DraftSet } from '../workflows/drafts'
+import { checkConcepts } from '../workflows/steps/check-concepts'
+import { extractConcepts } from '../workflows/steps/concepts'
+import { generateDrafts } from '../workflows/steps/generate'
 import { insertTestJob, insertTestUser } from './factories'
+import { fakeGenerator } from './generator'
 
 const ARTICLE_HTML = `<!doctype html>
 <html><head><title>Spaced repetition</title></head>
@@ -101,4 +106,26 @@ export type PipelineJob = Awaited<ReturnType<typeof insertPipelineJob>>
 
 export function readConcepts(jobId: string, step: 'concepts' | 'checked') {
   return getJson<Concept[]>(env.BUCKET, jobStepKey(jobId, step))
+}
+
+export async function checkedConcepts(job: PipelineJob, answer = CONCEPTS_JSON) {
+  const deps = { db: createDb(env.DB), bucket: env.BUCKET }
+  await extractConcepts({ ...deps, generator: fakeGenerator([answer]) }, job)
+  await checkConcepts({ ...deps, generator: fakeGenerator([]), verifier: supportsAll() }, job)
+}
+
+export async function draftsFrom(
+  job: PipelineJob,
+  answers: string[],
+  outputType: OutputType = 'notes',
+) {
+  await checkedConcepts(job)
+  await generateDrafts(
+    { db: createDb(env.DB), bucket: env.BUCKET, generator: fakeGenerator(answers) },
+    { ...job, outputType },
+  )
+}
+
+export function readDrafts(jobId: string, step: 'drafts' | 'verified') {
+  return getJson<DraftSet>(env.BUCKET, jobStepKey(jobId, step))
 }
