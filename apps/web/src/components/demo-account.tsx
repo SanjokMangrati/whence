@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import Script from 'next/script'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { identify, track } from '@/lib/analytics'
 import { authClient } from '@/lib/auth-client'
 import { authErrorCopy } from '@/lib/error-copy'
@@ -23,6 +23,7 @@ interface Turnstile {
     },
   ): WidgetId
   reset(widgetId: WidgetId): void
+  remove(widgetId: WidgetId): void
 }
 
 declare global {
@@ -39,20 +40,26 @@ function DemoAccountButton({ siteKey }: { siteKey: string }) {
   const router = useRouter()
   const container = useRef<HTMLDivElement>(null)
   const widget = useRef<WidgetId | null>(null)
+  const [ready, setReady] = useState(false)
   const [token, setToken] = useState<string | null>(null)
   const [failure, setFailure] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
 
-  function renderWidget() {
-    if (container.current === null || widget.current !== null) return
-    widget.current = window.turnstile.render(container.current, {
+  useEffect(() => {
+    if (!ready || container.current === null) return
+    const id = window.turnstile.render(container.current, {
       sitekey: siteKey,
       action: 'demo_account',
       appearance: 'interaction-only',
       callback: setToken,
       'expired-callback': () => setToken(null),
     })
-  }
+    widget.current = id
+    return () => {
+      window.turnstile.remove(id)
+      widget.current = null
+    }
+  }, [ready, siteKey])
 
   async function start(captcha: string) {
     setPending(true)
@@ -78,7 +85,7 @@ function DemoAccountButton({ siteKey }: { siteKey: string }) {
       <Script
         src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
         strategy="afterInteractive"
-        onReady={renderWidget}
+        onReady={() => setReady(true)}
       />
       <div ref={container} />
       {failure !== null && (
