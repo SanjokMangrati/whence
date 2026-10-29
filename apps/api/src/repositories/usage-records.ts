@@ -19,6 +19,14 @@ export async function countUsageForUserInPeriod(db: Database, userId: string, pe
   return row?.value ?? 0
 }
 
+export async function hasOpenUsageRecordForJob(db: Database, jobId: string) {
+  const [row] = await db
+    .select({ id: usageRecord.id })
+    .from(usageRecord)
+    .where(and(eq(usageRecord.jobId, jobId), isNull(usageRecord.returnedAt)))
+  return row !== undefined
+}
+
 export async function deleteUsageRecordForJob(db: Database, jobId: string) {
   await db.delete(usageRecord).where(eq(usageRecord.jobId, jobId))
 }

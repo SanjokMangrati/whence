@@ -63,6 +63,10 @@ export function normalizeSourceUrl(raw: string): NormalizedSource {
   }
 }
 
+export function sourceTypeOf(requestedUrl: string): SourceType {
+  return YOUTUBE_HOSTS.has(hostOf(new URL(requestedUrl.trim()))) ? 'video' : 'article'
+}
+
 function hostOf(url: URL): string {
   return url.hostname.toLowerCase().replace(/^www\./, '')
 }
