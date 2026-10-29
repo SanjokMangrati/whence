@@ -1,18 +1,25 @@
 import { Hono } from 'hono'
 import { createAuth } from './auth'
+import { createDb } from './db/client'
 import { clientAddress, rateLimit } from './middleware/rate-limit'
 import { requireSession, type AppEnv } from './middleware/session'
 import { errorReporterFromEnv } from './providers/posthog/error-reporter'
+import { artifacts } from './routes/artifacts'
 import { requestError } from './routes/errors'
+import { generations } from './routes/generations'
 import { providerKey } from './routes/provider-key'
+import { readPlanUsage } from './services/plans'
 
 const api = new Hono<AppEnv>()
   .use(requireSession)
-  .get('/me', (c) => {
+  .get('/me', async (c) => {
     const user = c.get('user')
-    return c.json({ id: user.id, email: user.email })
+    const usage = await readPlanUsage(createDb(c.env.DB), user.id, new Date())
+    return c.json({ id: user.id, email: user.email, ...usage })
   })
   .route('/me/provider-key', providerKey)
+  .route('/generations', generations)
+  .route('/artifacts', artifacts)
 
 const app = new Hono<{ Bindings: Env; Variables: Partial<AppEnv['Variables']> }>()
   .post('/api/auth/*', rateLimit('AUTH_LIMITER', clientAddress))

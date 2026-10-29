@@ -1,6 +1,7 @@
 import type { Context, Env as HonoEnv } from 'hono'
 import { createMiddleware } from 'hono/factory'
 import { requestError } from '../routes/errors'
+import type { AppEnv } from './session'
 
 type Limiter = { [Key in keyof Env]-?: Env[Key] extends RateLimit ? Key : never }[keyof Env]
 
@@ -21,4 +22,8 @@ export const CLIENT_ADDRESS_HEADER = 'x-client-ip'
 
 export function clientAddress(c: Context<{ Bindings: Env }>): string {
   return c.req.header(CLIENT_ADDRESS_HEADER) ?? 'local'
+}
+
+export function signedInUser(c: Context<AppEnv>): string {
+  return c.get('user').id
 }
