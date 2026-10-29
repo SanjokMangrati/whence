@@ -40,11 +40,15 @@ export function cacheEntriesFor(input: {
   canonicalJobId: string
   createdAt: Date
 }): NewArtifactCacheEntry[] {
-  return [...input.artifactTypes, 'qa' as const].map((outputType) => ({
+  return cacheOutputTypes(input.artifactTypes).map((outputType) => ({
     id: crypto.randomUUID(),
     ...input.key,
     outputType,
     canonicalJobId: input.canonicalJobId,
     createdAt: input.createdAt,
   }))
+}
+
+export function cacheOutputTypes(artifactTypes: ArtifactType[]): CacheOutputType[] {
+  return [...artifactTypes, 'qa']
 }

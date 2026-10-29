@@ -15,6 +15,18 @@ export interface MetricCounts {
   verifierCalls: number
 }
 
+export const NO_COUNTS: MetricCounts = {
+  claimsGenerated: 0,
+  claimsRejected: 0,
+  claimsRewritten: 0,
+  conceptsUnsupported: 0,
+  conceptsRewritten: 0,
+  stepsUnsupported: 0,
+  stepsRewritten: 0,
+  citationsInvalid: 0,
+  verifierCalls: 0,
+}
+
 export interface Measures {
   modelId: string
   usage: TokenUsage
