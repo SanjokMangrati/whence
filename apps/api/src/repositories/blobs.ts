@@ -6,6 +6,10 @@ export function jobStepKey(jobId: string, step: string) {
   return `jobs/${jobId}/${step}.json`
 }
 
+export function webhookPayloadKey(providerEventId: string) {
+  return `webhooks/${providerEventId}.json`
+}
+
 export function artifactContentKey(artifactId: string) {
   return `artifacts/${artifactId}.md`
 }
