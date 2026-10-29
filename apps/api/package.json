@@ -13,6 +13,7 @@
     "typecheck": "wrangler types && tsc --noEmit"
   },
   "dependencies": {
+    "entitlements": "workspace:*",
     "hono": "^4.13.14"
   },
   "devDependencies": {
