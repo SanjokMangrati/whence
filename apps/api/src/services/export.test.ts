@@ -1,4 +1,5 @@
 import { env } from 'cloudflare:workers'
+import JSZip from 'jszip'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createDb } from '../db/client'
 import { artifact, citation } from '../db/schema'
@@ -169,5 +170,45 @@ describe('artifact export', () => {
         '`a*b`' +
         String.raw` for \*emphasis\*, not \[x\](y) or a\_b. [¶ 2](${sourceUrl})`,
     )
+  })
+
+  it('renders a DOCX with each block and its markers', async () => {
+    const { artifactId, sourceUrl } = await insertNotes(userId, 'article')
+
+    const file = await exportArtifact(deps, userId, artifactId, 'docx')
+
+    const zip = await JSZip.loadAsync(file!.bytes)
+    const body = await zip.file('word/document.xml')!.async('string')
+    const relations = await zip.file('word/_rels/document.xml.rels')!.async('string')
+    for (const text of [
+      'Why spacing works',
+      'The interval grows after each review.',
+      'Each review is later than the last.',
+      'Rate your recall.',
+      'Second review',
+    ]) {
+      expect(body).toContain(text)
+    }
+    expect(body.match(/¶ 2/g)).toHaveLength(5)
+    expect(relations).toContain(`Target="${sourceUrl}"`)
+    expect(file?.filename).toBe('Spaced repetition - Notes.docx')
+  })
+
+  it('sets code from an article in the mono font without its backticks', async () => {
+    const { artifactId } = await insertNotes(
+      userId,
+      'article',
+      '- Narrow a union with `typeof x === "string"` first.[^1]',
+    )
+
+    const file = await exportArtifact(deps, userId, artifactId, 'docx')
+
+    const zip = await JSZip.loadAsync(file!.bytes)
+    const body = await zip.file('word/document.xml')!.async('string')
+    const codeRun = /<w:r>(?:(?!<\/w:r>).)*Consolas(?:(?!<\/w:r>).)*<w:t[^>]*>([^<]*)<\/w:t>/g
+    expect([...body.matchAll(codeRun)].map((match) => match[1])).toContain(
+      'typeof x === &quot;string&quot;',
+    )
+    expect(body).not.toContain('`')
   })
 })
