@@ -117,3 +117,7 @@ async function resolveAnchors(
       }
     })
 }
+
+export type ArtifactView = NonNullable<Awaited<ReturnType<typeof readArtifact>>>
+
+export type CitationAnchor = ArtifactView['citations'][number]

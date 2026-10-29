@@ -23,6 +23,7 @@
     "entitlements": "workspace:*",
     "hono": "^4.13.14",
     "linkedom": "^0.18.14",
+    "notes-format": "workspace:*",
     "posthog-node": "^5.57.2",
     "redact": "workspace:*"
   },
