@@ -10,6 +10,7 @@ import { artifactContentKey, getText } from '../../repositories/blobs'
 import { listCitationsByOwner } from '../../repositories/citations'
 import { findGenerationJobForUser } from '../../repositories/generation-jobs'
 import { listQaItemsByJob } from '../../repositories/qa-items'
+import { UNBOUNDED_BUDGET } from '../../services/spend-budget'
 import { fakeGenerator } from '../../test/generator'
 import {
   CHEAT_SHEET_JSON,
@@ -62,7 +63,13 @@ describe('commit step', () => {
   ) => {
     await draftsFrom(job, answers, outputType)
     await verifyDrafts(
-      { db, bucket, generator: fakeGenerator([JSON.stringify({ statements: [] })]), verifier },
+      {
+        db,
+        bucket,
+        generator: fakeGenerator([JSON.stringify({ statements: [] })]),
+        verifier,
+        budget: UNBOUNDED_BUDGET,
+      },
       job,
     )
   }

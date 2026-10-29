@@ -4,6 +4,7 @@ import type { ClaimVerification, ClaimVerifier, Generator, Verdict } from '../..
 import type { TokenUsage } from '../../domain/types'
 import { sumUsage } from '../../domain/usage'
 import { getJson, jobStepKey, putJson } from '../../repositories/blobs'
+import type { SpendBudget } from '../../services/spend-budget'
 import {
   MIN_MAPPING_ROWS,
   cellStatement,
@@ -63,7 +64,13 @@ interface Check {
 }
 
 export async function verifyDrafts(
-  deps: { db: Database; bucket: R2Bucket; generator: Generator; verifier: ClaimVerifier },
+  deps: {
+    db: Database
+    bucket: R2Bucket
+    generator: Generator
+    verifier: ClaimVerifier
+    budget: SpendBudget
+  },
   input: { jobId: string; sourceId: string },
 ): Promise<VerifyStepResult> {
   const drafts = await getJson<DraftSet>(deps.bucket, jobStepKey(input.jobId, 'drafts'))
@@ -76,6 +83,7 @@ export async function verifyDrafts(
     )
   }
 
+  await deps.budget.claimVerifierCalls(input.jobId, 'verified', calls)
   const spans = await loadSpanViews(deps.db, deps.bucket, input.sourceId)
   const usages: TokenUsage[] = []
   const rejected: RejectedClaim[] = []

@@ -2,6 +2,7 @@ import { env } from 'cloudflare:workers'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createDb } from '../../db/client'
 import type { ClaimVerifier, Generator } from '../../domain/ports'
+import { UNBOUNDED_BUDGET } from '../../services/spend-budget'
 import { fakeGenerator } from '../../test/generator'
 import {
   CONCEPTS_JSON,
@@ -30,7 +31,7 @@ describe('concept check step', () => {
   const extract = (answer: string) =>
     extractConcepts({ db, bucket, generator: fakeGenerator([answer]) }, job)
   const check = (generator: Generator, verifier: ClaimVerifier) =>
-    checkConcepts({ db, bucket, generator, verifier }, job)
+    checkConcepts({ db, bucket, generator, verifier, budget: UNBOUNDED_BUDGET }, job)
 
   beforeEach(async () => {
     job = await insertPipelineJob()

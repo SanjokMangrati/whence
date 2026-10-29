@@ -9,6 +9,7 @@ export const DOMAIN_ERROR_CODES = [
   'verifier_request_failed',
   'verification_failed',
   'too_many_claims',
+  'demo_budget_exhausted',
 ] as const
 
 export type DomainErrorCode = (typeof DOMAIN_ERROR_CODES)[number]

@@ -60,6 +60,9 @@
         "GENERATOR_MODEL_ID": "claude-haiku-4-5-20251001",
         "GENERATOR_INPUT_USD_PER_MTOK": 1,
         "GENERATOR_OUTPUT_USD_PER_MTOK": 5,
+        "DEMO_TRANSCRIPT_CREDITS": 90,
+        "DEMO_VERIFIER_MICRO_USD": 10000000,
+        "DEMO_VERIFIER_MICRO_USD_PER_CALL": 100,
       },
       "secrets": {
         "required": [

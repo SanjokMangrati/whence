@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { createDb } from '../../db/client'
 import type { Generator } from '../../domain/ports'
 import type { OutputType } from '../../domain/types'
+import { UNBOUNDED_BUDGET } from '../../services/spend-budget'
 import { fakeGenerator } from '../../test/generator'
 import {
   CHEAT_SHEET_JSON,
@@ -138,7 +139,16 @@ describe('generate step', () => {
     const generator = fakeGenerator([CONCEPTS_JSON, NOTES_JSON, CHEAT_SHEET_JSON, QA_JSON])
 
     await extractConcepts({ db, bucket, generator }, job)
-    await checkConcepts({ db, bucket, generator: fakeGenerator([]), verifier: supportsAll() }, job)
+    await checkConcepts(
+      {
+        db,
+        bucket,
+        generator: fakeGenerator([]),
+        verifier: supportsAll(),
+        budget: UNBOUNDED_BUDGET,
+      },
+      job,
+    )
     await generate(generator, 'notes_and_cheat_sheet')
 
     const [first, ...rest] = generator.requests

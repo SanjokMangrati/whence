@@ -15,6 +15,7 @@ import { createReadabilityArticleExtractor } from '../providers/readability/arti
 import { createSupadataTranscriptSource } from '../providers/supadata/transcript-source'
 import { createYouTubeVideoMetadataSource } from '../providers/youtube/video-metadata-source'
 import { updateGenerationJobStage, type GenerationStage } from '../repositories/generation-jobs'
+import { spendBudgetFromEnv } from '../services/spend-budget'
 import { artifactTypesFor } from './drafts'
 import { isPermanentFailure, permanentAware, recordFailure } from './failure'
 import { generatorForJob } from './generator'
@@ -49,6 +50,7 @@ export class GenerationWorkflow extends WorkflowEntrypoint<Env, GenerationParams
     const bucket = env.BUCKET
     const generator = () => generatorForJob(env, db, jobId)
     const verifier = createJevClaimVerifier({ apiKey: env.JEV_API_KEY })
+    const budget = spendBudgetFromEnv(env, db, bucket)
 
     const durations: Record<string, number> = {}
     const usages: TokenUsage[] = []
@@ -103,6 +105,7 @@ export class GenerationWorkflow extends WorkflowEntrypoint<Env, GenerationParams
             transcripts: createSupadataTranscriptSource({ apiKey: env.SUPADATA_API_KEY }),
             articles: createReadabilityArticleExtractor(),
             generator: await generator(),
+            budget,
           },
           { jobId, ...validated, plan },
         ),
@@ -142,7 +145,10 @@ export class GenerationWorkflow extends WorkflowEntrypoint<Env, GenerationParams
       counts.citationsInvalid += concepts.citationsInvalid
 
       const checked = await runStage('check_concepts', 'check-concepts', async () =>
-        checkConcepts({ db, bucket, generator: await generator(), verifier }, { jobId, sourceId }),
+        checkConcepts(
+          { db, bucket, generator: await generator(), verifier, budget },
+          { jobId, sourceId },
+        ),
       )
       usages.push(checked.usage)
       counts.conceptsUnsupported = checked.conceptsUnsupported
@@ -159,7 +165,10 @@ export class GenerationWorkflow extends WorkflowEntrypoint<Env, GenerationParams
       modelId = drafts.modelId
 
       const verified = await runStage('verify', 'verify', async () =>
-        verifyDrafts({ db, bucket, generator: await generator(), verifier }, { jobId, sourceId }),
+        verifyDrafts(
+          { db, bucket, generator: await generator(), verifier, budget },
+          { jobId, sourceId },
+        ),
       )
       usages.push(verified.usage)
       counts.claimsGenerated = verified.claimsGenerated

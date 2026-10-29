@@ -16,6 +16,7 @@ import {
   removeQaItemForUser,
 } from '../../repositories/qa-items'
 import { findSourceById } from '../../repositories/sources'
+import { UNBOUNDED_BUDGET } from '../../services/spend-budget'
 import { insertTestJob, insertTestUser } from '../../test/factories'
 import { fakeGenerator } from '../../test/generator'
 import {
@@ -58,7 +59,13 @@ describe('cache step', () => {
     author = await insertPipelineJob()
     await draftsFrom(author, [NOTES_JSON, QA_JSON])
     await verifyDrafts(
-      { db, bucket, generator: fakeGenerator([]), verifier: supportsAll() },
+      {
+        db,
+        bucket,
+        generator: fakeGenerator([]),
+        verifier: supportsAll(),
+        budget: UNBOUNDED_BUDGET,
+      },
       author,
     )
     canonical = await commitGeneration(

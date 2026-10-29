@@ -6,6 +6,7 @@ import { extractFromHtml } from '../providers/readability/article-extractor'
 import { getJson, jobStepKey } from '../repositories/blobs'
 import { listSpansForSource } from '../repositories/sources'
 import { buildCanonicalSource } from '../services/canonical-source'
+import { UNBOUNDED_BUDGET } from '../services/spend-budget'
 import type { DraftSet } from '../workflows/drafts'
 import { checkConcepts } from '../workflows/steps/check-concepts'
 import { extractConcepts } from '../workflows/steps/concepts'
@@ -109,7 +110,7 @@ export function readConcepts(jobId: string, step: 'concepts' | 'checked') {
 }
 
 export async function checkedConcepts(job: PipelineJob, answer = CONCEPTS_JSON) {
-  const deps = { db: createDb(env.DB), bucket: env.BUCKET }
+  const deps = { db: createDb(env.DB), bucket: env.BUCKET, budget: UNBOUNDED_BUDGET }
   await extractConcepts({ ...deps, generator: fakeGenerator([answer]) }, job)
   await checkConcepts({ ...deps, generator: fakeGenerator([]), verifier: supportsAll() }, job)
 }

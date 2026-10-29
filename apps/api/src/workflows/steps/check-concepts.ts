@@ -4,6 +4,7 @@ import type { ClaimVerifier, Generator } from '../../domain/ports'
 import type { Concept, TokenUsage } from '../../domain/types'
 import { sumUsage } from '../../domain/usage'
 import { getJson, jobStepKey, putJson } from '../../repositories/blobs'
+import type { SpendBudget } from '../../services/spend-budget'
 import { conceptRewriteRequest } from '../prompts'
 import { rewriteUnsupported } from '../rewrites'
 import { evidenceOf, loadSpanViews } from '../spans'
@@ -22,7 +23,13 @@ interface ConceptCheck {
 }
 
 export async function checkConcepts(
-  deps: { db: Database; bucket: R2Bucket; generator: Generator; verifier: ClaimVerifier },
+  deps: {
+    db: Database
+    bucket: R2Bucket
+    generator: Generator
+    verifier: ClaimVerifier
+    budget: SpendBudget
+  },
   input: { jobId: string; sourceId: string },
 ): Promise<CheckConceptsStepResult> {
   const concepts = (
@@ -31,6 +38,7 @@ export async function checkConcepts(
   if (concepts.length === 0) {
     throw new DomainError('generation_failed', 'The model found only asides in the source.')
   }
+  await deps.budget.claimVerifierCalls(input.jobId, 'checked', concepts.length * 2)
   const spans = await loadSpanViews(deps.db, deps.bucket, input.sourceId)
   const usages: TokenUsage[] = []
   let verifierCalls = 0

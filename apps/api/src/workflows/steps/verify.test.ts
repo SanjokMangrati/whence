@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { createDb } from '../../db/client'
 import type { ClaimVerifier, Generator } from '../../domain/ports'
 import { getJson, jobStepKey } from '../../repositories/blobs'
+import { UNBOUNDED_BUDGET } from '../../services/spend-budget'
 import { fakeGenerator } from '../../test/generator'
 import {
   NOTES_JSON,
@@ -85,7 +86,7 @@ describe('verify step', () => {
   let job: PipelineJob
 
   const verify = (generator: Generator, verifier: ClaimVerifier) =>
-    verifyDrafts({ db, bucket, generator, verifier }, job)
+    verifyDrafts({ db, bucket, generator, verifier, budget: UNBOUNDED_BUDGET }, job)
   const verifiedEntries = async () =>
     (await readDrafts(job.jobId, 'verified')).artifacts[0]!.sections.flatMap(
       (section) => section.entries,

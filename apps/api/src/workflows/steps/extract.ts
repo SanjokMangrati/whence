@@ -13,6 +13,7 @@ import { sumUsage } from '../../domain/usage'
 import { findJson, jobStepKey, putJson } from '../../repositories/blobs'
 import { findLatestTranscript } from '../../repositories/sources'
 import { buildCanonicalSource } from '../../services/canonical-source'
+import type { SpendBudget } from '../../services/spend-budget'
 import { toSentences } from '../sentences'
 
 export interface ExtractDeps {
@@ -22,6 +23,7 @@ export interface ExtractDeps {
   transcripts: TranscriptSource
   articles: ArticleExtractor
   generator: Generator
+  budget: SpendBudget
 }
 
 export interface ExtractInput {
@@ -86,6 +88,7 @@ async function extractVideo(
     const video = await deps.videos.lookup(input.normalizedUrl)
     refuseOverLength(video.lengthMs, entitlements)
 
+    await deps.budget.claimTranscript(input.jobId)
     const captions = await deps.transcripts.captions(input.normalizedUrl)
     if (captions === null || !captionsCoverVideo(captions.lengthMs ?? 0, video.lengthMs)) {
       throw new DomainError('captions_unavailable', 'The video has no full captions.')

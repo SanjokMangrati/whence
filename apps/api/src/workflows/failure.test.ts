@@ -138,4 +138,12 @@ describe('failure record', () => {
 
     expect(await countUsageForUserInPeriod(db, userId, PERIOD)).toBe(0)
   })
+
+  it('frees the slot of a job the demo budget stopped without using a return', async () => {
+    for (let slot = 0; slot < 3; slot++) await failJob('generation_failed', slot)
+
+    await failJob('demo_budget_exhausted', 3)
+
+    expect(await countUsageForUserInPeriod(db, userId, PERIOD)).toBe(0)
+  })
 })

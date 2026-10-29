@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import type { Plan } from 'entitlements'
 import { createDb } from '../../db/client'
 import { findSourceById } from '../../repositories/sources'
+import { UNBOUNDED_BUDGET, demoSpendBudget } from '../../services/spend-budget'
 import { fakeGenerator } from '../../test/generator'
 import { videoTranscript } from '../../test/sources'
 import { extractSource, type ExtractDeps } from './extract'
@@ -41,6 +42,7 @@ function fakeDeps(video: FakeVideo, sentences = ['Spaced repetition works.']) {
       },
     },
     generator: fakeGenerator([]),
+    budget: UNBOUNDED_BUDGET,
   }
   return { deps, calls }
 }
@@ -101,6 +103,20 @@ describe('extract step', () => {
 
     await expect(extract(deps, videoUrl(), 'free')).rejects.toMatchObject({
       code: 'source_too_long',
+    })
+    expect(calls).toEqual({ lookups: 1, transcripts: 0 })
+  })
+
+  it('refuses a new video before the captions call when the demo has no transcript credits', async () => {
+    const { deps, calls } = fakeDeps(captioned(10 * MINUTE_MS))
+    deps.budget = demoSpendBudget(db, env.BUCKET, {
+      transcriptCredits: 0,
+      verifierMicroUsd: 0,
+      verifierMicroUsdPerCall: 100,
+    })
+
+    await expect(extract(deps, videoUrl(), 'demo')).rejects.toMatchObject({
+      code: 'demo_budget_exhausted',
     })
     expect(calls).toEqual({ lookups: 1, transcripts: 0 })
   })

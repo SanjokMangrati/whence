@@ -18,9 +18,15 @@ const PERMANENT_CODES = new Set<DomainErrorCode>([
   'provider_key_required',
   'verification_failed',
   'too_many_claims',
+  'demo_budget_exhausted',
 ])
 
-const FREE_CODES: DomainErrorCode[] = ['unsupported_source', 'private_address', 'source_too_long']
+const FREE_CODES: DomainErrorCode[] = [
+  'unsupported_source',
+  'private_address',
+  'source_too_long',
+  'demo_budget_exhausted',
+]
 
 const CODED_MESSAGE = /^(?:\w*Error: )*([a-z_]+): ([\s\S]*)$/
 
