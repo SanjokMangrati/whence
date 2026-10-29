@@ -17,7 +17,9 @@
   "dependencies": {
     "drizzle-orm": "^0.45.4",
     "entitlements": "workspace:*",
-    "hono": "^4.13.14"
+    "hono": "^4.13.14",
+    "posthog-node": "^5.57.2",
+    "redact": "workspace:*"
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "^1.4.9",

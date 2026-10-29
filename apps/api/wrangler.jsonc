@@ -6,6 +6,8 @@
   "workers_dev": false,
   "preview_urls": false,
   "d1_databases": [{ "binding": "DB", "database_name": "whence" }],
+  "vars": { "POSTHOG_HOST": "https://eu.i.posthog.com" },
+  "secrets": { "required": ["POSTHOG_KEY"] },
   "observability": {
     "enabled": true,
     "traces": { "enabled": true },
@@ -13,6 +15,8 @@
   "env": {
     "demo": {
       "d1_databases": [{ "binding": "DB", "database_name": "whence-demo" }],
+      "vars": { "POSTHOG_HOST": "https://eu.i.posthog.com" },
+      "secrets": { "required": ["POSTHOG_KEY"] },
     },
   },
 }
