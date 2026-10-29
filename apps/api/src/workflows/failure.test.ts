@@ -56,6 +56,19 @@ describe('failure classification', () => {
     })
   })
 
+  it('reads no code that appears after the start of the message', () => {
+    const error = new Error('generation_failed: The page says unsupported_source: none.')
+
+    expect(toFailure(error)).toEqual({
+      code: 'generation_failed',
+      message: 'The page says unsupported_source: none.',
+    })
+    expect(toFailure(new Error('The page says source_too_long: none.'))).toEqual({
+      code: 'generation_failed',
+      message: 'The page says source_too_long: none.',
+    })
+  })
+
   it('reports an unknown failure as a generation failure', () => {
     expect(toFailure(new Error('boom'))).toEqual({ code: 'generation_failed', message: 'boom' })
   })

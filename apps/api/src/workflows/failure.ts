@@ -22,6 +22,8 @@ const PERMANENT_CODES = new Set<DomainErrorCode>([
 
 const FREE_CODES: DomainErrorCode[] = ['unsupported_source', 'private_address', 'source_too_long']
 
+const CODED_MESSAGE = /^(?:\w*Error: )*([a-z_]+): ([\s\S]*)$/
+
 export async function permanentAware<T>(run: () => Promise<T>): Promise<T> {
   try {
     return await run()
@@ -70,12 +72,10 @@ export function toFailure(error: unknown): { code: DomainErrorCode; message: str
     return { code: error.code, message: error.message }
   }
   const message = error instanceof Error ? error.message : String(error)
-  for (const code of DOMAIN_ERROR_CODES) {
-    const prefix = `${code}: `
-    const at = message.indexOf(prefix)
-    if (at !== -1) {
-      return { code, message: message.slice(at + prefix.length) }
-    }
+  const match = CODED_MESSAGE.exec(message)
+  const code = DOMAIN_ERROR_CODES.find((known) => known === match?.[1])
+  if (match !== null && code !== undefined) {
+    return { code, message: match[2]! }
   }
   return { code: 'generation_failed', message }
 }
