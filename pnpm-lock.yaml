@@ -71,6 +71,12 @@ importers:
         specifier: ^4.154.0
         version: 4.154.0(@types/node@24.19.2)
 
+  packages/entitlements:
+    devDependencies:
+      typescript:
+        specifier: ~6.0.3
+        version: 6.0.3
+
 packages:
 
   '@ast-grep/napi-darwin-arm64@0.45.3':
