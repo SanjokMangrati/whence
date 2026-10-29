@@ -12,10 +12,16 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS",
   },
-  "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "whence-web" }],
+  "services": [
+    { "binding": "WORKER_SELF_REFERENCE", "service": "whence-web" },
+    { "binding": "API", "service": "whence-api" },
+  ],
   "env": {
     "demo": {
-      "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "whence-web-demo" }],
+      "services": [
+        { "binding": "WORKER_SELF_REFERENCE", "service": "whence-web-demo" },
+        { "binding": "API", "service": "whence-api-demo" },
+      ],
     },
   },
 }

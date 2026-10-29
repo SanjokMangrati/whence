@@ -9,6 +9,7 @@
     "lint": "eslint",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "typecheck": "next typegen && pnpm run cf-typegen && tsc --noEmit",
+    "test": "vitest run",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy --env=\"\"",
     "deploy:demo": "opennextjs-cloudflare build && opennextjs-cloudflare deploy --env demo"
@@ -26,6 +27,7 @@
     "eslint": "^9.39.5",
     "eslint-config-next": "16.4.3",
     "typescript": "~6.0.3",
+    "vitest": "^5.0.5",
     "wrangler": "^4.154.0"
   }
 }
