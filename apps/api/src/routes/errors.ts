@@ -1,5 +1,5 @@
 import type { Context } from 'hono'
-import { DomainError, PlanError } from '../domain/errors'
+import { DomainError, ExportError, PlanError } from '../domain/errors'
 
 const REQUEST_STATUS = {
   invalid_request: 400,
@@ -30,6 +30,9 @@ export function refusalResponse(c: Context, error: unknown) {
   }
   if (error instanceof DomainError) {
     return c.json({ error: error.code }, error.code === 'provider_key_required' ? 402 : 400)
+  }
+  if (error instanceof ExportError) {
+    return c.json({ error: error.code }, 422)
   }
   throw error
 }
