@@ -1,5 +1,7 @@
 import { SELF } from 'cloudflare:test'
+import { env } from 'cloudflare:workers'
 import { describe, expect, it } from 'vitest'
+import app from '../index'
 import { signUp } from '../test/session'
 
 const KEY = 'sk-ant-api03-visitor-key-for-tests-only-AbCd'
@@ -22,7 +24,7 @@ describe('provider key routes', () => {
 
     expect(saved.status).toBe(200)
     expect(JSON.parse(savedText)).toEqual({ set: true, last4: 'AbCd' })
-    expect(JSON.parse(readText)).toEqual({ set: true, last4: 'AbCd' })
+    expect(JSON.parse(readText)).toEqual({ set: true, last4: 'AbCd', required: true })
     expect(savedText + readText).not.toContain('visitor-key')
   })
 
@@ -31,7 +33,11 @@ describe('provider key routes', () => {
     const stranger = await signUp()
     await call(owner.cookie, 'PUT', { key: KEY })
 
-    expect(await (await call(stranger.cookie, 'GET')).json()).toEqual({ set: false, last4: null })
+    expect(await (await call(stranger.cookie, 'GET')).json()).toEqual({
+      set: false,
+      last4: null,
+      required: true,
+    })
   })
 
   it('refuses a value that is not an Anthropic key', async () => {
@@ -42,7 +48,11 @@ describe('provider key routes', () => {
       expect(response.status).toBe(400)
       expect(await response.json()).toEqual({ error: 'invalid_request' })
     }
-    expect(await (await call(cookie, 'GET')).json()).toEqual({ set: false, last4: null })
+    expect(await (await call(cookie, 'GET')).json()).toEqual({
+      set: false,
+      last4: null,
+      required: true,
+    })
   })
 
   it('deletes the key', async () => {
@@ -50,7 +60,23 @@ describe('provider key routes', () => {
     await call(cookie, 'PUT', { key: KEY })
 
     expect((await call(cookie, 'DELETE')).status).toBe(204)
-    expect(await (await call(cookie, 'GET')).json()).toEqual({ set: false, last4: null })
+    expect(await (await call(cookie, 'GET')).json()).toEqual({
+      set: false,
+      last4: null,
+      required: true,
+    })
+  })
+
+  it('needs no user key where the deployment has its own key', async () => {
+    const { cookie } = await signUp()
+
+    const response = await app.request(
+      'https://example.com/api/me/provider-key',
+      { headers: { cookie } },
+      { ...env, ANTHROPIC_API_KEY: 'sk-ant-server-key-for-tests-only' },
+    )
+
+    expect(await response.json()).toEqual({ set: false, last4: null, required: false })
   })
 
   it('refuses a request without a session', async () => {

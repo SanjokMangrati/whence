@@ -13,7 +13,10 @@ const keyBody = validator('json', (body, c) => {
 })
 
 export const providerKey = new Hono<AppEnv>()
-  .get('/', async (c) => c.json(await providerKeyStatus(createDb(c.env.DB), c.get('user').id)))
+  .get('/', async (c) => {
+    const status = await providerKeyStatus(createDb(c.env.DB), c.get('user').id)
+    return c.json({ ...status, required: c.env.ANTHROPIC_API_KEY === undefined })
+  })
   .put('/', keyBody, async (c) => {
     const status = await storeProviderKey(
       createDb(c.env.DB),
