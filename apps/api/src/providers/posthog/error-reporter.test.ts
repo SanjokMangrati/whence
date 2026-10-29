@@ -1,20 +1,6 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
+import { stubFetch } from '../../test/fetch'
 import { createPostHogErrorReporter } from './error-reporter'
-
-const realFetch = globalThis.fetch
-
-afterEach(() => {
-  globalThis.fetch = realFetch
-})
-
-function recordFetch(response: () => Response) {
-  const calls: Request[] = []
-  globalThis.fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-    calls.push(new Request(input, init))
-    return response()
-  }) as typeof fetch
-  return calls
-}
 
 async function eventsOf(request: Request) {
   let body: ReadableStream<Uint8Array> = request.body!
@@ -31,7 +17,7 @@ async function eventsOf(request: Request) {
 
 describe('posthog error reporter', () => {
   it('sends the error without the URL or email it holds', async () => {
-    const calls = recordFetch(() => Response.json({ status: 1 }))
+    const calls = stubFetch(() => Response.json({ status: 1 }))
     const reporter = createPostHogErrorReporter({
       apiKey: 'phc_test',
       host: 'https://posthog.example.test',
@@ -56,7 +42,7 @@ describe('posthog error reporter', () => {
   })
 
   it('does not throw when PostHog is down', async () => {
-    recordFetch(() => new Response('', { status: 503 }))
+    stubFetch(() => new Response('', { status: 503 }))
     const reporter = createPostHogErrorReporter({
       apiKey: 'phc_test',
       host: 'https://posthog.example.test',
@@ -66,7 +52,7 @@ describe('posthog error reporter', () => {
   })
 
   it('sends nothing without a key', async () => {
-    const calls = recordFetch(() => Response.json({ status: 1 }))
+    const calls = stubFetch(() => Response.json({ status: 1 }))
     const reporter = createPostHogErrorReporter({
       apiKey: '',
       host: 'https://posthog.example.test',

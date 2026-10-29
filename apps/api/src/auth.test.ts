@@ -1,5 +1,6 @@
 import { SELF } from 'cloudflare:test'
 import { describe, expect, it, vi } from 'vitest'
+import { stubFetch } from './test/fetch'
 
 const jsonHeaders = {
   'content-type': 'application/json',
@@ -17,15 +18,11 @@ function cookieHeaderFrom(response: Response): string {
 describe('better auth over D1', () => {
   it('supports signup, email verification, a persisted session, logout, login, and password reset', async () => {
     const emails: { to: string[]; text: string }[] = []
-    const realFetch = globalThis.fetch
-    const fetchSpy = vi
-      .spyOn(globalThis, 'fetch')
-      .mockImplementation(async (input: RequestInfo | URL, init?: RequestInit) => {
-        const request = new Request(input, init)
-        if (request.url !== 'https://api.resend.com/emails') return realFetch(input, init)
-        emails.push(await request.json())
-        return Response.json({ id: `email-${emails.length}` })
-      })
+    stubFetch(async (request) => {
+      expect(request.url).toBe('https://api.resend.com/emails')
+      emails.push(await request.json())
+      return Response.json({ id: `email-${emails.length}` })
+    })
     const email = `${crypto.randomUUID()}@example.test`
     const password = 'correct horse battery staple'
 
@@ -95,8 +92,6 @@ describe('better auth over D1', () => {
     await vi.waitFor(() => expect(emails).toHaveLength(3))
     expect(emails[2]!.to).toEqual([email])
     const token = emails[2]!.text.split('/reset-password/')[1]!.split('?')[0]!
-
-    fetchSpy.mockRestore()
 
     const newPassword = 'new correct horse battery staple'
     const resetRes = await SELF.fetch('https://example.com/api/auth/reset-password', {

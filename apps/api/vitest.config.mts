@@ -25,6 +25,6 @@ export default defineConfig(async () => {
         },
       }),
     ],
-    test: { setupFiles: ['./src/test/setup.ts'] },
+    test: { setupFiles: ['./src/test/setup.ts'], restoreMocks: true },
   }
 })

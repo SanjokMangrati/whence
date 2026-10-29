@@ -1,10 +1,11 @@
 import { SELF } from 'cloudflare:test'
 import { env } from 'cloudflare:workers'
 import { eq } from 'drizzle-orm'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { createAuth } from './auth'
 import { createDb } from './db/client'
 import { user } from './db/schema'
+import { stubFetch } from './test/fetch'
 
 const db = createDb(env.DB)
 const demoAuth = createAuth({ ...env, TURNSTILE_SECRET_KEY: 'test-turnstile-secret' })
@@ -17,12 +18,8 @@ interface Siteverify {
 
 function answerSiteverify(result: Siteverify) {
   const bodies: Record<string, string>[] = []
-  const realFetch = globalThis.fetch
-  vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
-    const request = new Request(input, init)
-    if (request.url !== 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
-      return realFetch(input, init)
-    }
+  stubFetch(async (request) => {
+    expect(request.url).toBe('https://challenges.cloudflare.com/turnstile/v0/siteverify')
     bodies.push(await request.json())
     return Response.json(result)
   })
@@ -46,10 +43,6 @@ function createDemoAccount(address: string, token?: string) {
 }
 
 const PASSED = { success: true, action: 'demo_account', hostname: 'example.com' }
-
-afterEach(() => {
-  vi.restoreAllMocks()
-})
 
 describe('demo accounts', () => {
   it('are off without a Turnstile secret', async () => {
@@ -99,7 +92,6 @@ describe('demo accounts', () => {
     answerSiteverify(result)
     expect((await createDemoAccount(address, 'turnstile-token')).status).toBe(403)
 
-    vi.restoreAllMocks()
     answerSiteverify(PASSED)
     const statuses = []
     for (let attempt = 0; attempt < 3; attempt++) {
