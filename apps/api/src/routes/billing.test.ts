@@ -1,10 +1,10 @@
-import { SELF } from 'cloudflare:test'
+import { createExecutionContext, SELF } from 'cloudflare:test'
 import { env } from 'cloudflare:workers'
 import { eq } from 'drizzle-orm'
 import { describe, expect, it } from 'vitest'
 import { createDb } from '../db/client'
 import { webhookEvent } from '../db/schema'
-import app from '../index'
+import worker from '../index'
 import { getText, webhookPayloadKey } from '../repositories/blobs'
 import { findSubscriptionForUser, upsertSubscription } from '../repositories/subscriptions'
 import { resolvePlan } from '../services/plans'
@@ -170,10 +170,10 @@ describe('subscription routes', () => {
   it('says when payments run in test mode', async () => {
     const { cookie } = await signUp()
 
-    const response = await app.request(
-      'https://example.com/api/billing/subscription',
-      { headers: { cookie } },
+    const response = await worker.fetch(
+      new Request('https://example.com/api/billing/subscription', { headers: { cookie } }),
       { ...env, DODO_ENVIRONMENT: 'test_mode' },
+      createExecutionContext(),
     )
 
     expect(await response.json()).toEqual({ subscription: null, testMode: true })

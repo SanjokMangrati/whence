@@ -15,6 +15,7 @@
       "class_name": "GenerationWorkflow",
     },
   ],
+  "triggers": { "crons": ["0 9 * * *"] },
   "ratelimits": [
     { "name": "AUTH_LIMITER", "namespace_id": "1001", "simple": { "limit": 20, "period": 60 } },
     {

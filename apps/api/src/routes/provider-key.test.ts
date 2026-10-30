@@ -1,7 +1,7 @@
-import { SELF } from 'cloudflare:test'
+import { createExecutionContext, SELF } from 'cloudflare:test'
 import { env } from 'cloudflare:workers'
 import { beforeEach, describe, expect, it } from 'vitest'
-import app from '../index'
+import worker from '../index'
 import { stubFetch } from '../test/fetch'
 import { signUp } from '../test/session'
 
@@ -96,10 +96,10 @@ describe('provider key routes', () => {
   it('needs no user key where the deployment has its own key', async () => {
     const { cookie } = await signUp()
 
-    const response = await app.request(
-      'https://example.com/api/me/provider-key',
-      { headers: { cookie } },
+    const response = await worker.fetch(
+      new Request('https://example.com/api/me/provider-key', { headers: { cookie } }),
       { ...env, ANTHROPIC_API_KEY: 'sk-ant-server-key-for-tests-only' },
+      createExecutionContext(),
     )
 
     expect(await response.json()).toEqual({ set: false, last4: null, required: false })

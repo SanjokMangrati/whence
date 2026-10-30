@@ -11,6 +11,7 @@ import { requestError } from './routes/errors'
 import { generations } from './routes/generations'
 import { providerKey } from './routes/provider-key'
 import { study } from './routes/study'
+import { runDailyJobs } from './scheduled'
 import { readPlanUsage } from './services/plans'
 
 const api = new Hono<AppEnv>()
@@ -48,4 +49,7 @@ export type AppType = typeof app
 
 export { GenerationWorkflow } from './workflows/generation'
 
-export default app
+export default {
+  fetch: app.fetch,
+  scheduled: runDailyJobs,
+} satisfies ExportedHandler<Env>
