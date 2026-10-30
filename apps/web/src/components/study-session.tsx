@@ -32,13 +32,13 @@ export function StudySession({
   source,
   exitHref,
   exitLabel,
-  remindersEnabled,
+  offerReminders,
 }: {
   questions: { id: string; question: string }[]
   source: string | null
   exitHref: string
   exitLabel: string
-  remindersEnabled: boolean
+  offerReminders: boolean
 }) {
   const [queue, setQueue] = useState(questions)
   const [removing, setRemoving] = useState(false)
@@ -166,7 +166,7 @@ export function StudySession({
     )
   }
   if (current === undefined) {
-    return <Summary results={results} source={source} remindersEnabled={remindersEnabled} />
+    return <Summary results={results} source={source} offerReminders={offerReminders} />
   }
 
   return (
@@ -286,11 +286,11 @@ export function StudySession({
 function Summary({
   results,
   source,
-  remindersEnabled,
+  offerReminders,
 }: {
   results: Result[]
   source: string | null
-  remindersEnabled: boolean
+  offerReminders: boolean
 }) {
   const count = (ratings: Rating[]) =>
     results.filter((result) => ratings.includes(result.rating)).length
@@ -363,7 +363,7 @@ function Summary({
         </figcaption>
         <Journey dates={nextBack.projectedDueAts.map((date) => new Date(date))} />
       </figure>
-      {!remindersEnabled && (
+      {offerReminders && (
         <section
           aria-labelledby="reminders"
           className="grid animate-rise gap-3 border-t border-line pt-5 [animation-delay:340ms]"

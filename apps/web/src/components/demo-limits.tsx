@@ -19,6 +19,7 @@ export function DemoLimits({ keyRequired }: { keyRequired: boolean }) {
         All visitors share one budget each month. When it runs out, new sources start again the next
         month.
       </li>
+      <li>The demo does not send reminder emails.</li>
       <li>The demo account is deleted after {DEMO_ACCOUNT_DAYS} days.</li>
     </ul>
   )

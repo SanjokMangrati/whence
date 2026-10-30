@@ -23,7 +23,7 @@ export default async function QuizPage() {
       source={null}
       exitHref="/"
       exitLabel="Go to Home"
-      remindersEnabled={reminders.enabled}
+      offerReminders={reminders.available && !reminders.enabled}
     />
   )
 }

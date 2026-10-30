@@ -99,8 +99,14 @@ describe('study routes', () => {
     const saved = await call(owner.cookie, '/reminders', { method: 'PUT', body: { enabled: true } })
 
     expect(await saved.json()).toEqual({ enabled: true })
-    expect(await (await call(owner.cookie, '/reminders')).json()).toEqual({ enabled: true })
-    expect(await (await call(stranger.cookie, '/reminders')).json()).toEqual({ enabled: false })
+    expect(await (await call(owner.cookie, '/reminders')).json()).toEqual({
+      enabled: true,
+      available: true,
+    })
+    expect(await (await call(stranger.cookie, '/reminders')).json()).toEqual({
+      enabled: false,
+      available: true,
+    })
     expect(
       (await call(owner.cookie, '/reminders', { method: 'PUT', body: { enabled: 'yes' } })).status,
     ).toBe(400)

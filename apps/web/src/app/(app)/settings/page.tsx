@@ -42,7 +42,7 @@ export default async function SettingsPage() {
         <h2 id="quiz" className="mono-label text-ink-3">
           Quiz
         </h2>
-        <ReminderSwitch enabled={reminders.enabled} />
+        {reminders.available && <ReminderSwitch enabled={reminders.enabled} />}
         <PreferenceSwitch name="show-shortcuts">Show keyboard shortcuts</PreferenceSwitch>
       </section>
     </main>

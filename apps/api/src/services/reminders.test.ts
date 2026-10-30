@@ -1,6 +1,8 @@
 import { env } from 'cloudflare:workers'
+import { eq } from 'drizzle-orm'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createDb } from '../db/client'
+import { user } from '../db/schema'
 import type { Email, ErrorReporter, Mailer } from '../domain/ports'
 import { findReminderSettingForUser } from '../repositories/reminder-settings'
 import { saveReviewSchedule } from '../repositories/review-schedules'
@@ -65,11 +67,21 @@ describe('reminders service', () => {
   })
 
   it('is off until the user turns it on', async () => {
-    expect(await readReminders(db, userId)).toEqual({ enabled: false })
+    expect(await readReminders(db, userId)).toEqual({ enabled: false, available: true })
     await setReminders(db, userId, true, NOW)
-    expect(await readReminders(db, userId)).toEqual({ enabled: true })
+    expect(await readReminders(db, userId)).toEqual({ enabled: true, available: true })
     await setReminders(db, userId, false, NOW)
-    expect(await readReminders(db, userId)).toEqual({ enabled: false })
+    expect(await readReminders(db, userId)).toEqual({ enabled: false, available: true })
+  })
+
+  it('is not available to a demo account', async () => {
+    await db.update(user).set({ isAnonymous: true }).where(eq(user.id, userId))
+
+    expect(await readReminders(db, userId)).toEqual({ enabled: false, available: false })
+    await expect(setReminders(db, userId, true, NOW)).rejects.toMatchObject({
+      code: 'entitlement_required',
+    })
+    expect(await findReminderSettingForUser(db, userId)).toBeUndefined()
   })
 
   it('sends one email with the due count and quiz link', async () => {

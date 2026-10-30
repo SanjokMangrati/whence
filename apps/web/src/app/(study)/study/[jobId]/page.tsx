@@ -36,7 +36,7 @@ export default async function StudyPage({ params, searchParams }: PageProps<'/st
       source={status.title ?? status.requestedUrl}
       exitHref={`/generations/${jobId}`}
       exitLabel="Go to your notes"
-      remindersEnabled={reminders.enabled}
+      offerReminders={reminders.available && !reminders.enabled}
     />
   )
 }

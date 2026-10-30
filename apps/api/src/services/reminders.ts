@@ -1,3 +1,4 @@
+import { ENTITLEMENTS } from 'entitlements'
 import type { Database } from '../db/client'
 import type { ErrorReporter, Mailer } from '../domain/ports'
 import {
@@ -7,6 +8,7 @@ import {
   releaseReminder,
   saveReminderSetting,
 } from '../repositories/reminder-settings'
+import { requireEntitlement, resolvePlan } from './plans'
 
 export interface ReminderDeps {
   db: Database
@@ -24,11 +26,15 @@ export interface ReminderRun {
 const RECIPIENTS_PER_RUN = 300
 
 export async function readReminders(db: Database, userId: string) {
-  const setting = await findReminderSettingForUser(db, userId)
-  return { enabled: setting?.enabled ?? false }
+  const [setting, plan] = await Promise.all([
+    findReminderSettingForUser(db, userId),
+    resolvePlan(db, userId),
+  ])
+  return { enabled: setting?.enabled ?? false, available: ENTITLEMENTS[plan].reminders }
 }
 
 export async function setReminders(db: Database, userId: string, enabled: boolean, now: Date) {
+  if (enabled) requireEntitlement(await resolvePlan(db, userId), 'reminders')
   await saveReminderSetting(db, userId, enabled, now)
   return { enabled }
 }

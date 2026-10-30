@@ -11,6 +11,7 @@ export interface Entitlements {
   maxSourceLengthMs: number
   collections: boolean
   export: boolean
+  reminders: boolean
 }
 
 export const ENTITLEMENTS: Record<Plan, Entitlements> = {
@@ -21,6 +22,7 @@ export const ENTITLEMENTS: Record<Plan, Entitlements> = {
     maxSourceLengthMs: 30 * 60 * 1000,
     collections: false,
     export: false,
+    reminders: true,
   },
   pro: {
     quotaPeriod: 'month',
@@ -29,6 +31,7 @@ export const ENTITLEMENTS: Record<Plan, Entitlements> = {
     maxSourceLengthMs: 90 * 60 * 1000,
     collections: true,
     export: true,
+    reminders: true,
   },
   demo: {
     quotaPeriod: 'account',
@@ -37,6 +40,7 @@ export const ENTITLEMENTS: Record<Plan, Entitlements> = {
     maxSourceLengthMs: 30 * 60 * 1000,
     collections: true,
     export: true,
+    reminders: false,
   },
 }
 

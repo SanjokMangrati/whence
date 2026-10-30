@@ -13,7 +13,7 @@ import {
   rateRecall,
   removeQuestion,
 } from '../services/study'
-import { requestError } from './errors'
+import { refusalResponse, requestError } from './errors'
 
 const RECALL_RATINGS: readonly RecallRating[] = ['again', 'hard', 'good', 'easy']
 
@@ -54,7 +54,11 @@ export const study = new Hono<AppEnv>()
   })
   .put('/reminders', remindersBody, async (c) => {
     const { enabled } = c.req.valid('json')
-    return c.json(await setReminders(createDb(c.env.DB), c.get('user').id, enabled, new Date()))
+    try {
+      return c.json(await setReminders(createDb(c.env.DB), c.get('user').id, enabled, new Date()))
+    } catch (error) {
+      return refusalResponse(c, error)
+    }
   })
   .get('/questions/:id/answer', async (c) => {
     const item = await readQaItem(
