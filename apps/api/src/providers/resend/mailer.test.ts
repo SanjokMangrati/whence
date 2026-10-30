@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { stubFetch } from '../../test/fetch'
 import { createResendMailer } from './mailer'
 
@@ -34,5 +34,30 @@ describe('resend mailer', () => {
     await expect(
       mailer.send({ to: 'user@example.test', subject: 'Subject', text: 'Body' }),
     ).rejects.toThrow('Resend returned 422.')
+  })
+
+  it('sends again after Resend limits the request rate', async () => {
+    vi.useFakeTimers()
+    const responses = [new Response('{}', { status: 429 }), Response.json({ id: 'email-1' })]
+    const requests = stubFetch(() => responses.shift()!)
+
+    const sent = mailer.send({ to: 'user@example.test', subject: 'Subject', text: 'Body' })
+    await vi.runAllTimersAsync()
+
+    await expect(sent).resolves.toBeUndefined()
+    expect(requests).toHaveLength(2)
+    vi.useRealTimers()
+  })
+
+  it('throws when Resend still limits the rate after two retries', async () => {
+    vi.useFakeTimers()
+    const requests = stubFetch(() => new Response('{}', { status: 429 }))
+
+    const sent = mailer.send({ to: 'user@example.test', subject: 'Subject', text: 'Body' })
+    const failed = expect(sent).rejects.toThrow('Resend returned 429.')
+    await vi.runAllTimersAsync()
+    await failed
+    expect(requests).toHaveLength(3)
+    vi.useRealTimers()
   })
 })
