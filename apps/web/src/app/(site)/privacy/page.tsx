@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { LegalPage } from '@/components/legal-page'
+import { DEMO_ACCOUNT_DAYS } from '@/lib/plans'
 
 export const metadata: Metadata = { title: 'Privacy · Whence' }
 
@@ -45,7 +46,7 @@ export default function PrivacyPage() {
         {
           heading: 'How long it stays',
           paragraphs: [
-            'When you delete a source, you stop seeing it. Whence keeps the notes, cheat sheet, and questions made from it, because the next person who adds the same source gets a copy of them. Your account stays until you ask for it to be deleted. A demo account is deleted after 7 days. [RETENTION PERIOD NEEDED]',
+            `When you delete a source, you stop seeing it. Whence keeps the notes, cheat sheet, and questions made from it, because the next person who adds the same source gets a copy of them. Your account stays until you ask for it to be deleted. A demo account is deleted after ${DEMO_ACCOUNT_DAYS} days. [RETENTION PERIOD NEEDED]`,
           ],
         },
         {

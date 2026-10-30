@@ -39,3 +39,5 @@ export const ENTITLEMENTS: Record<Plan, Entitlements> = {
     export: true,
   },
 }
+
+export const DEMO_ACCOUNT_DAYS = 7

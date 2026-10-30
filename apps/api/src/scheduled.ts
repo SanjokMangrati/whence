@@ -1,10 +1,33 @@
 import { createDb } from './db/client'
+import type { ErrorReporter } from './domain/ports'
 import { errorReporterFromEnv } from './providers/posthog/error-reporter'
 import { createResendMailer } from './providers/resend/mailer'
+import { purgeExpiredDemoAccounts } from './services/demo-accounts'
 import { sendDueReminders } from './services/reminders'
 
 export async function runDailyJobs(controller: ScheduledController, env: Env) {
+  const now = new Date(controller.scheduledTime)
   const errors = errorReporterFromEnv(env)
+  const outcomes = await Promise.allSettled([
+    runDemoPurge(env, errors, now),
+    runReminders(env, errors, now),
+  ])
+  for (const outcome of outcomes) {
+    if (outcome.status === 'rejected') throw outcome.reason
+  }
+}
+
+async function runDemoPurge(env: Env, errors: ErrorReporter, now: Date) {
+  try {
+    const purged = await purgeExpiredDemoAccounts(createDb(env.DB), now)
+    console.log(JSON.stringify({ event: 'demo_purge', purged }))
+  } catch (error) {
+    await errors.report(error, { where: 'demo_purge' })
+    throw error
+  }
+}
+
+async function runReminders(env: Env, errors: ErrorReporter, now: Date) {
   const run = await sendDueReminders(
     {
       db: createDb(env.DB),
@@ -12,7 +35,7 @@ export async function runDailyJobs(controller: ScheduledController, env: Env) {
       errors,
       appOrigin: env.BETTER_AUTH_URL,
     },
-    new Date(controller.scheduledTime),
+    now,
   )
   console.log(JSON.stringify({ event: 'reminders', sent: run.sent, failed: run.failed }))
   if (run.capped) {
