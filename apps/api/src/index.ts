@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { bodyLimit } from 'hono/body-limit'
 import { createAuth } from './auth'
 import { createDb } from './db/client'
 import { clientAddress, rateLimit } from './middleware/rate-limit'
@@ -13,6 +14,8 @@ import { providerKey } from './routes/provider-key'
 import { study } from './routes/study'
 import { runDailyJobs } from './scheduled'
 import { readPlanUsage } from './services/plans'
+
+const MAX_BODY_BYTES = 64 * 1024
 
 const api = new Hono<AppEnv>()
   .use(requireSession)
@@ -29,6 +32,7 @@ const api = new Hono<AppEnv>()
   .route('/billing', billing)
 
 const app = new Hono<{ Bindings: Env; Variables: Partial<AppEnv['Variables']> }>()
+  .use(bodyLimit({ maxSize: MAX_BODY_BYTES, onError: (c) => requestError(c, 'invalid_request') }))
   .post('/api/auth/*', rateLimit('AUTH_LIMITER', clientAddress))
   .on(['POST', 'GET'], '/api/auth/*', (c) => createAuth(c.env).handler(c.req.raw))
   .use('/api/webhooks/*', rateLimit('WEBHOOK_LIMITER', clientAddress))

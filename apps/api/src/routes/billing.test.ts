@@ -123,6 +123,17 @@ describe('payment webhook route', () => {
     expect(await resolvePlan(db, userId)).toBe('free')
   })
 
+  it('refuses a body over 64 KiB before reading it', async () => {
+    const eventId = crypto.randomUUID()
+    const body = 'x'.repeat(64 * 1024 + 1)
+
+    const response = await deliver(eventId, body)
+
+    expect(response.status).toBe(400)
+    expect(await response.json()).toEqual({ error: 'invalid_request' })
+    expect(await eventRows(eventId)).toEqual([])
+  })
+
   it('leaves a failed event unprocessed so a redelivery applies it', async () => {
     const eventId = crypto.randomUUID()
     const body = dodoPayload({
