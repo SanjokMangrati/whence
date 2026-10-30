@@ -9,9 +9,10 @@
     "deploy": "wrangler deploy --env=\"\"",
     "deploy:demo": "wrangler deploy --env demo",
     "cf-typegen": "wrangler types",
-    "lint": "eslint src",
-    "typecheck": "wrangler types && tsc --noEmit",
+    "lint": "eslint src eval",
+    "typecheck": "wrangler types && tsc --noEmit && tsc -p eval",
     "test": "vitest run",
+    "eval": "node eval/run.ts",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "^1.4.9",
+    "@types/node": "^24.19.2",
     "drizzle-kit": "^0.31.11",
     "eslint": "^9.39.5",
     "jszip": "^3.10.2",

@@ -1,0 +1,57 @@
+[
+  {
+    "id": "event-loop",
+    "url": "https://www.youtube.com/watch?v=eiC58R16hb8",
+    "why": "Automatic captions with no punctuation, 12.5 minutes. The source of the audited Q&A failures."
+  },
+  {
+    "id": "distributed-transactions",
+    "url": "https://www.youtube.com/watch?v=DOFflggE_0Q",
+    "why": "Punctuated captions, 14.7 minutes. One scenario used as an example in several places."
+  },
+  {
+    "id": "closures",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Closures",
+    "why": "Article with code examples."
+  },
+  {
+    "id": "llm-video",
+    "url": "https://www.youtube.com/watch?v=zjkBMFhNj_g",
+    "why": "Long video, about 60 minutes. Needs the pro plan."
+  },
+  {
+    "id": "lp-current-event-loop",
+    "url": "https://www.youtube.com/watch?v=8aGhZQkoFbQ",
+    "why": "Landing candidate: current specimen, Philip Roberts, JSConf EU 2014, 26.9 min, human captions. Baseline."
+  },
+  {
+    "id": "lp-3b1b-transformers",
+    "url": "https://www.youtube.com/watch?v=wjZofJX0v4M",
+    "why": "Dense video near 30 minutes: 3Blue1Brown, Transformers, 2024, 27.2 min, human captions. A fixed limit of 40 concepts stopped its notes at 12 minutes. Also a landing candidate."
+  },
+  {
+    "id": "lp-branch-memory",
+    "url": "https://www.youtube.com/watch?v=TfhL5kBiQVI",
+    "why": "Landing candidate: Branch Education, cache, memory, and storage, 2026, 27.4 min, human captions."
+  },
+  {
+    "id": "lp-gaurav-kafka",
+    "url": "https://www.youtube.com/watch?v=hNDjd9I_VGA",
+    "why": "Landing candidate: Gaurav Sen, Kafka paper, 2024, 15.6 min, human captions."
+  },
+  {
+    "id": "lp-bytebytego-proximity",
+    "url": "https://www.youtube.com/watch?v=M4lR_Va97cQ",
+    "why": "Landing candidate: ByteByteGo, location based service design, 2022, 24.7 min, human captions."
+  },
+  {
+    "id": "lp-spanning-tree-btree",
+    "url": "https://www.youtube.com/watch?v=K1a2Bk8NrYQ",
+    "why": "Landing candidate: Spanning Tree, B-trees, 2024, 12.7 min, human captions."
+  },
+  {
+    "id": "lp-hello-indexing",
+    "url": "https://www.youtube.com/watch?v=BHCSL_ZifI0",
+    "why": "Landing candidate: Hello Interview, DB indexing, 2025, 14.3 min, automatic captions."
+  }
+]
