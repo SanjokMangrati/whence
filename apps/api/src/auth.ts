@@ -6,7 +6,7 @@ import { captcha } from 'better-auth/plugins/captcha'
 import { waitUntil } from 'cloudflare:workers'
 import { createDb, type Database } from './db/client'
 import type { Email } from './domain/ports'
-import { CLIENT_ADDRESS_HEADER } from './middleware/rate-limit'
+import { CLIENT_ADDRESS } from './middleware/rate-limit'
 import { errorReporterFromEnv } from './providers/posthog/error-reporter'
 import { createResendMailer } from './providers/resend/mailer'
 import { claimDemoSignup } from './repositories/demo-signups'
@@ -30,7 +30,7 @@ export function createAuth(env: Env) {
     baseURL: env.BETTER_AUTH_URL,
     rateLimit: { enabled: false },
     advanced: {
-      ipAddress: { ipAddressHeaders: [CLIENT_ADDRESS_HEADER] },
+      ipAddress: CLIENT_ADDRESS,
       backgroundTasks: { handler: waitUntil },
     },
     emailAndPassword: {

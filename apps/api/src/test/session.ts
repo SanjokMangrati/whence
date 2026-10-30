@@ -7,7 +7,7 @@ export async function signUp(): Promise<{ cookie: string; userId: string }> {
   const headers = {
     'content-type': 'application/json',
     origin: 'https://example.com',
-    'x-client-ip': crypto.randomUUID(),
+    'x-client-ip': randomAddress(),
   }
   await SELF.fetch('https://example.com/api/auth/sign-up/email', {
     method: 'POST',
@@ -26,4 +26,8 @@ export async function signUp(): Promise<{ cookie: string; userId: string }> {
     .join('; ')
   const me = await SELF.fetch('https://example.com/api/me', { headers: { cookie } })
   return { cookie, userId: (await me.json<{ id: string }>()).id }
+}
+
+function randomAddress(): string {
+  return `10.${Array.from(crypto.getRandomValues(new Uint8Array(3))).join('.')}`
 }

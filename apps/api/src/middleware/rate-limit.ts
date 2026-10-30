@@ -1,3 +1,4 @@
+import { getIP } from 'better-auth/api'
 import type { Context, Env as HonoEnv } from 'hono'
 import { createMiddleware } from 'hono/factory'
 import { requestError } from '../routes/errors'
@@ -18,10 +19,10 @@ export function rateLimit<E extends HonoEnv & { Bindings: Env }>(
   })
 }
 
-export const CLIENT_ADDRESS_HEADER = 'x-client-ip'
+export const CLIENT_ADDRESS = { ipAddressHeaders: ['x-client-ip'] }
 
 export function clientAddress(c: Context<{ Bindings: Env }>): string {
-  return c.req.header(CLIENT_ADDRESS_HEADER) ?? 'local'
+  return getIP(c.req.raw, { advanced: { ipAddress: CLIENT_ADDRESS } }) ?? 'local'
 }
 
 export function signedInUser(c: Context<AppEnv>): string {

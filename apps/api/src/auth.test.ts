@@ -117,19 +117,31 @@ describe('better auth over D1', () => {
     expect(signInWithNewPasswordRes.status).toBe(200)
   })
 
-  it('refuses auth requests from one address over the limit', async () => {
-    function signOut(address: string) {
-      return SELF.fetch('https://example.com/api/auth/sign-out', {
-        method: 'POST',
-        headers: { ...jsonHeaders, 'x-client-ip': address },
-      })
-    }
+  function signOut(address: string) {
+    return SELF.fetch('https://example.com/api/auth/sign-out', {
+      method: 'POST',
+      headers: { ...jsonHeaders, 'x-client-ip': address },
+    })
+  }
 
+  it('refuses auth requests from one address over the limit', async () => {
     const statuses = await Promise.all(
       Array.from({ length: 21 }, async () => (await signOut('203.0.113.2')).status),
     )
     expect(statuses.filter((status) => status === 429)).toHaveLength(1)
 
     expect((await signOut('203.0.113.3')).status).not.toBe(429)
+  })
+
+  it('counts the addresses of one IPv6 /64 as one address', async () => {
+    const statuses = await Promise.all(
+      Array.from(
+        { length: 21 },
+        async (_, i) => (await signOut(`2001:db8:5:5::${i + 1}`)).status,
+      ),
+    )
+    expect(statuses.filter((status) => status === 429)).toHaveLength(1)
+
+    expect((await signOut('2001:db8:5:6::1')).status).not.toBe(429)
   })
 })
