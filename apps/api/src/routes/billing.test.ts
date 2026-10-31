@@ -1,10 +1,9 @@
-import { createExecutionContext, SELF } from 'cloudflare:test'
+import { SELF } from 'cloudflare:test'
 import { env } from 'cloudflare:workers'
 import { eq } from 'drizzle-orm'
 import { describe, expect, it } from 'vitest'
 import { createDb } from '../db/client'
 import { webhookEvent } from '../db/schema'
-import worker from '../index'
 import { getText, webhookPayloadKey } from '../repositories/blobs'
 import { findSubscriptionForUser, upsertSubscription } from '../repositories/subscriptions'
 import { resolvePlan } from '../services/plans'
@@ -173,21 +172,8 @@ describe('subscription routes', () => {
         currentPeriodEnd: '2026-10-29T00:00:00.000Z',
         cancelAtPeriodEnd: true,
       },
-      testMode: false,
     })
     expect(await resolvePlan(db, userId)).toBe('pro')
-  })
-
-  it('says when payments run in test mode', async () => {
-    const { cookie } = await signUp()
-
-    const response = await worker.fetch(
-      new Request('https://example.com/api/billing/subscription', { headers: { cookie } }),
-      { ...env, DODO_ENVIRONMENT: 'test_mode' },
-      createExecutionContext(),
-    )
-
-    expect(await response.json()).toEqual({ subscription: null, testMode: true })
   })
 
   it('refuses to cancel or open the portal for a free account', async () => {

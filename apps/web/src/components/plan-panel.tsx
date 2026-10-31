@@ -19,11 +19,9 @@ interface Subscription {
 export function PlanPanel({
   plan,
   subscription: initial,
-  testMode,
 }: {
   plan: Plan
   subscription: Subscription | null
-  testMode: boolean
 }) {
   const router = useRouter()
   const [subscription, setSubscription] = useState(initial)
@@ -127,12 +125,6 @@ export function PlanPanel({
           >
             <span aria-live="polite">{upgrade.label}</span>
           </button>
-          {testMode && (
-            <p className="ui-s text-ink-3">
-              Checkout runs in test mode, so no money moves. Pay with the card 4242 4242 4242 4242,
-              date 06/32, and code 123.
-            </p>
-          )}
         </PlanCard>
       )}
     </div>

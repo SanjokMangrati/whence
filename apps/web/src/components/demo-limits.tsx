@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { DEMO_ACCOUNT_DAYS, PLAN_LIMIT } from '@/lib/plans'
+import { DEMO_ACCOUNT_DAYS } from '@/lib/plans'
 
 export function DemoLimits({ keyRequired }: { keyRequired: boolean }) {
   return (
@@ -13,8 +13,6 @@ export function DemoLimits({ keyRequired }: { keyRequired: boolean }) {
           .
         </li>
       )}
-      <li>Videos need captions.</li>
-      <li>{PLAN_LIMIT.demo}</li>
       <li>
         All visitors share one budget each month. When it runs out, new sources start again the next
         month.

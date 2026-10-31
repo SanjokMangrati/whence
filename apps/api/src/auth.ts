@@ -61,9 +61,10 @@ export function createAuth(env: Env) {
             to: user.email,
             subject: 'Confirm your Whence email',
             text: [
-              `Open this link to confirm your email and log in: ${url}`,
+              `Please verify your email to complete sign up: ${url}`,
               'The link works for 1 hour. If you did not sign up, you can ignore this email.',
             ].join('\n\n'),
+            html: verificationEmailHtml(url),
           },
           'email_verification',
           user.id,
@@ -121,6 +122,30 @@ function demoAccountPlugins(db: Database, turnstile: { secretKey: string; hostna
     }),
     limit,
   ]
+}
+
+function verificationEmailHtml(url: string) {
+  const href = url.replaceAll('&', '&amp;').replaceAll('"', '&quot;')
+  return `<!doctype html>
+<html>
+  <body style="margin:0;padding:0;background:#faf9f6;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#faf9f6;">
+      <tr>
+        <td align="center" style="padding:32px 16px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#ffffff;border:1px solid #dedbd6;border-radius:8px;">
+            <tr>
+              <td style="padding:32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#1c1a16;font-size:16px;line-height:24px;">
+                <p style="margin:0 0 24px;">Please verify your email to complete sign up.</p>
+                <a href="${href}" style="display:inline-block;padding:12px 20px;background:#1c1a16;color:#faf9f6;border-radius:4px;font-weight:600;text-decoration:none;">Verify Email</a>
+                <p style="margin:24px 0 0;color:#6b675f;font-size:14px;line-height:20px;">The link works for 1 hour. If you did not sign up, you can ignore this email.</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`
 }
 
 export type Auth = ReturnType<typeof createAuth>

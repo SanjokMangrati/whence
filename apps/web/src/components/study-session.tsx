@@ -3,7 +3,7 @@
 import type { InferResponseType } from 'hono/client'
 import { Trash2, X } from 'lucide-react'
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { ConfirmDialog } from './confirm-dialog'
 import { DueDates } from './due-dates'
 import { Evidence } from './evidence'
@@ -139,21 +139,23 @@ export function StudySession({
     heading.current?.focus({ preventScroll: true })
   }, [currentId])
 
-  useEffect(() => {
-    function onKey(event: KeyboardEvent) {
-      if (removing || event.target instanceof HTMLTextAreaElement) return
-      if (answer === null && event.key === ' ') {
-        event.preventDefault()
-        void showAnswer()
-      }
-      const rating = RATINGS[Number(event.key) - 1]
-      if (answer !== null && rating !== undefined) {
-        void rate(rating.value)
-      }
+  const onKey = useEffectEvent((event: KeyboardEvent) => {
+    if (removing || event.target instanceof HTMLTextAreaElement) return
+    if (answer === null && event.key === ' ') {
+      event.preventDefault()
+      void showAnswer()
     }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    const rating = RATINGS[Number(event.key) - 1]
+    if (answer !== null && rating !== undefined) {
+      void rate(rating.value)
+    }
   })
+
+  useEffect(() => {
+    const listener = (event: KeyboardEvent) => onKey(event)
+    window.addEventListener('keydown', listener)
+    return () => window.removeEventListener('keydown', listener)
+  }, [])
 
   if (current === undefined && results.length === 0) {
     return (

@@ -25,7 +25,6 @@ export const billing = new Hono<AppEnv>()
   .get('/subscription', async (c) => {
     return c.json({
       subscription: await readSubscription(createDb(c.env.DB), c.get('user').id),
-      testMode: c.env.DODO_ENVIRONMENT === 'test_mode',
     })
   })
   .post('/checkout', async (c) => {

@@ -7,7 +7,7 @@ import { shortDate } from '@/lib/format'
 
 export default async function BillingPage() {
   const api = await serverApi()
-  const [me, { subscription, testMode }, providerKey] = await Promise.all([
+  const [me, { subscription }, providerKey] = await Promise.all([
     currentUser(),
     api.billing.subscription.$get().then((response) => response.json()),
     api.me['provider-key'].$get().then((response) => response.json()),
@@ -24,7 +24,7 @@ export default async function BillingPage() {
         <h2 id="plan" className="mono-label text-ink-3">
           Plan
         </h2>
-        <PlanPanel plan={me.plan} subscription={subscription} testMode={testMode} />
+        <PlanPanel plan={me.plan} subscription={subscription} />
       </section>
       {me.plan === 'demo' && (
         <section aria-labelledby="demo" className="grid gap-4 border-t border-line pt-5">

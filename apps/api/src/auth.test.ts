@@ -135,10 +135,7 @@ describe('better auth over D1', () => {
 
   it('counts the addresses of one IPv6 /64 as one address', async () => {
     const statuses = await Promise.all(
-      Array.from(
-        { length: 21 },
-        async (_, i) => (await signOut(`2001:db8:5:5::${i + 1}`)).status,
-      ),
+      Array.from({ length: 21 }, async (_, i) => (await signOut(`2001:db8:5:5::${i + 1}`)).status),
     )
     expect(statuses.filter((status) => status === 429)).toHaveLength(1)
 

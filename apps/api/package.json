@@ -13,7 +13,9 @@
     "typecheck": "wrangler types && tsc --noEmit && tsc -p eval",
     "test": "vitest run",
     "eval": "node eval/run.ts",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "wrangler d1 migrations apply DB --remote --env=\"\"",
+    "db:migrate:demo": "wrangler d1 migrations apply DB --remote --env demo"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",

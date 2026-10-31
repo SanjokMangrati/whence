@@ -39,7 +39,14 @@ export default function LoginPage({ searchParams }: PageProps<'/login'>) {
     <>
       <h1 className="display-m">Log in</h1>
       <form onSubmit={submitWith(logIn)} className="grid gap-4">
-        <TextField label="Email" name="email" type="email" autoComplete="email" required />
+        <TextField
+          label="Email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          spellCheck={false}
+          required
+        />
         <TextField
           label="Password"
           name="password"

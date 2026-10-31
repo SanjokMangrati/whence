@@ -55,7 +55,14 @@ export default function SignupPage({ searchParams }: PageProps<'/signup'>) {
     <>
       <h1 className="display-m">Sign up</h1>
       <form onSubmit={submitWith(signUp)} className="grid gap-4">
-        <TextField label="Email" name="email" type="email" autoComplete="email" required />
+        <TextField
+          label="Email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          spellCheck={false}
+          required
+        />
         <TextField
           label="Password"
           hint={`At least ${MIN_PASSWORD_LENGTH} characters.`}

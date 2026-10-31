@@ -49,6 +49,34 @@ describe('resend mailer', () => {
     vi.useRealTimers()
   })
 
+  it('sends a keyed email again after a Resend server error', async () => {
+    vi.useFakeTimers()
+    const responses = [new Response('{}', { status: 500 }), Response.json({ id: 'email-1' })]
+    const requests = stubFetch(() => responses.shift()!)
+
+    const sent = mailer.send({
+      to: 'user@example.test',
+      subject: 'Subject',
+      text: 'Body',
+      idempotencyKey: 'reminder/user-1/2026-10-01',
+    })
+    await vi.runAllTimersAsync()
+
+    await expect(sent).resolves.toBeUndefined()
+    expect(requests).toHaveLength(2)
+    expect(requests[1]!.headers.get('idempotency-key')).toBe('reminder/user-1/2026-10-01')
+    vi.useRealTimers()
+  })
+
+  it('does not send an email without a key again after a Resend server error', async () => {
+    const requests = stubFetch(() => new Response('{}', { status: 500 }))
+
+    await expect(
+      mailer.send({ to: 'user@example.test', subject: 'Subject', text: 'Body' }),
+    ).rejects.toThrow('Resend returned 500.')
+    expect(requests).toHaveLength(1)
+  })
+
   it('throws when Resend still limits the rate after two retries', async () => {
     vi.useFakeTimers()
     const requests = stubFetch(() => new Response('{}', { status: 429 }))

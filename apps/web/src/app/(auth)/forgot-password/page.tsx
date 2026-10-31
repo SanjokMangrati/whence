@@ -47,7 +47,14 @@ export default function ForgotPasswordPage() {
     <>
       <h1 className="display-m">Set a new password</h1>
       <form onSubmit={submitWith(requestReset)} className="grid gap-4">
-        <TextField label="Email" name="email" type="email" autoComplete="email" required />
+        <TextField
+          label="Email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          spellCheck={false}
+          required
+        />
         {failure !== null && (
           <p role="alert" className="ui-s font-medium text-missed">
             {failure}
