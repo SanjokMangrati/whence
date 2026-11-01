@@ -23,6 +23,10 @@ export function createAuth(env: Env) {
   }
 
   const db = createDb(env.DB)
+  const demoAccounts =
+    env.TURNSTILE_SECRET_KEY === undefined
+      ? null
+      : { secretKey: env.TURNSTILE_SECRET_KEY, hostname: new URL(env.BETTER_AUTH_URL).hostname }
 
   return betterAuth({
     database: drizzleAdapter(db, { provider: 'sqlite' }),
@@ -33,50 +37,50 @@ export function createAuth(env: Env) {
       ipAddress: CLIENT_ADDRESS,
       backgroundTasks: { handler: waitUntil },
     },
-    emailAndPassword: {
-      enabled: true,
-      requireEmailVerification: true,
-      revokeSessionsOnPasswordReset: true,
-      sendResetPassword: ({ user, url }) =>
-        send(
-          {
-            to: user.email,
-            subject: 'Reset your Whence password',
-            text: [
-              `Open this link to set a new password: ${url}`,
-              'The link works for 1 hour. If you did not ask for this, you can ignore this email.',
-            ].join('\n\n'),
-          },
-          'password_reset',
-          user.id,
-        ),
-    },
-    emailVerification: {
-      sendOnSignUp: true,
-      sendOnSignIn: true,
-      autoSignInAfterVerification: true,
-      sendVerificationEmail: ({ user, url }) =>
-        send(
-          {
-            to: user.email,
-            subject: 'Confirm your Whence email',
-            text: [
-              `Please verify your email to complete sign up: ${url}`,
-              'The link works for 1 hour. If you did not sign up, you can ignore this email.',
-            ].join('\n\n'),
-            html: verificationEmailHtml(url),
-          },
-          'email_verification',
-          user.id,
-        ),
-    },
-    plugins:
-      env.TURNSTILE_SECRET_KEY === undefined
-        ? []
-        : demoAccountPlugins(db, {
-            secretKey: env.TURNSTILE_SECRET_KEY,
-            hostname: new URL(env.BETTER_AUTH_URL).hostname,
-          }),
+    emailAndPassword:
+      demoAccounts === null
+        ? {
+            enabled: true,
+            requireEmailVerification: true,
+            revokeSessionsOnPasswordReset: true,
+            sendResetPassword: ({ user, url }) =>
+              send(
+                {
+                  to: user.email,
+                  subject: 'Reset your Whence password',
+                  text: [
+                    `Open this link to set a new password: ${url}`,
+                    'The link works for 1 hour. If you did not ask for this, you can ignore this email.',
+                  ].join('\n\n'),
+                },
+                'password_reset',
+                user.id,
+              ),
+          }
+        : { enabled: false },
+    emailVerification:
+      demoAccounts === null
+        ? {
+            sendOnSignUp: true,
+            sendOnSignIn: true,
+            autoSignInAfterVerification: true,
+            sendVerificationEmail: ({ user, url }) =>
+              send(
+                {
+                  to: user.email,
+                  subject: 'Confirm your Whence email',
+                  text: [
+                    `Please verify your email to complete sign up: ${url}`,
+                    'The link works for 1 hour. If you did not sign up, you can ignore this email.',
+                  ].join('\n\n'),
+                  html: verificationEmailHtml(url),
+                },
+                'email_verification',
+                user.id,
+              ),
+          }
+        : undefined,
+    plugins: demoAccounts === null ? [] : demoAccountPlugins(db, demoAccounts),
   })
 }
 

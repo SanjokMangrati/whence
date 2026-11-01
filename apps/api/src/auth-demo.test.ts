@@ -113,3 +113,41 @@ describe('demo accounts', () => {
     expect(otherAddress.status).toBe(200)
   })
 })
+
+describe('email accounts with demo accounts on', () => {
+  function postDemoAuth(path: string, body: Record<string, string>) {
+    return demoAuth.handler(
+      new Request(`https://example.com/api/auth${path}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', origin: 'https://example.com' },
+        body: JSON.stringify(body),
+      }),
+    )
+  }
+
+  it.each([
+    [
+      '/sign-up/email',
+      { email: 'visitor@example.test', password: 'correct horse battery staple', name: 'Visitor' },
+      'EMAIL_PASSWORD_SIGN_UP_DISABLED',
+    ],
+    [
+      '/sign-in/email',
+      { email: 'visitor@example.test', password: 'correct horse battery staple' },
+      'EMAIL_PASSWORD_DISABLED',
+    ],
+    ['/request-password-reset', { email: 'visitor@example.test' }, 'RESET_PASSWORD_DISABLED'],
+    [
+      '/send-verification-email',
+      { email: 'visitor@example.test' },
+      'VERIFICATION_EMAIL_NOT_ENABLED',
+    ],
+  ])('refuses %s', async (path, body, code) => {
+    const sent = stubFetch(async () => Response.json({ id: 'email' }))
+
+    const res = await postDemoAuth(path, body)
+    expect(res.status).toBe(400)
+    expect(await res.json()).toMatchObject({ code })
+    expect(sent).toHaveLength(0)
+  })
+})
