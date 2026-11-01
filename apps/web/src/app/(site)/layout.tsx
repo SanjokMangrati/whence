@@ -1,11 +1,19 @@
 import Link from 'next/link'
 import { Wordmark } from '@/components/wordmark'
+import { EMAIL_ACCOUNTS } from '@/lib/accounts'
 
 const SECTIONS = [
   { href: '/#how', label: 'How it works' },
   { href: '/#pricing', label: 'Pricing' },
   { href: '/#faq', label: 'FAQ' },
 ]
+
+const ACCOUNT_LINKS = EMAIL_ACCOUNTS
+  ? [
+      { href: '/login', label: 'Log in' },
+      { href: '/signup', label: 'Sign up' },
+    ]
+  : [{ href: '/login', label: 'Try the demo' }]
 
 export default function SiteLayout({ children }: LayoutProps<'/'>) {
   return (
@@ -21,12 +29,15 @@ export default function SiteLayout({ children }: LayoutProps<'/'>) {
             ))}
           </nav>
           <div className="flex gap-2 justify-self-end">
-            <Link href="/login" className="btn btn-ghost btn-sm">
-              Log in
-            </Link>
-            <Link href="/signup" className="btn btn-secondary btn-sm">
-              Sign up
-            </Link>
+            {ACCOUNT_LINKS.map((link, index) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`btn btn-sm ${index === ACCOUNT_LINKS.length - 1 ? 'btn-secondary' : 'btn-ghost'}`}
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
       </header>
@@ -42,13 +53,7 @@ export default function SiteLayout({ children }: LayoutProps<'/'>) {
             </p>
           </div>
           <FooterLinks title="Product" links={SECTIONS} />
-          <FooterLinks
-            title="Account"
-            links={[
-              { href: '/login', label: 'Log in' },
-              { href: '/signup', label: 'Sign up' },
-            ]}
-          />
+          <FooterLinks title="Account" links={ACCOUNT_LINKS} />
           <FooterLinks
             title="Legal"
             links={[

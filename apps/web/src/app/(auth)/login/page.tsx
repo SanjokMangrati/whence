@@ -5,13 +5,31 @@ import { useRouter } from 'next/navigation'
 import { use, useState } from 'react'
 import { DemoAccount } from '@/components/demo-account'
 import { TextField } from '@/components/text-field'
+import { EMAIL_ACCOUNTS } from '@/lib/accounts'
 import { identify } from '@/lib/analytics'
 import { authClient } from '@/lib/auth-client'
 import { authErrorCopy } from '@/lib/error-copy'
 import { submitWith, withLink } from '@/lib/forms'
+import { DEMO_ACCOUNT_DAYS } from '@/lib/plans'
 
 export default function LoginPage({ searchParams }: PageProps<'/login'>) {
   const { link } = use(searchParams)
+  return EMAIL_ACCOUNTS ? <EmailLogin link={link} /> : <DemoLogin link={link} />
+}
+
+function DemoLogin({ link }: { link: string | string[] | undefined }) {
+  return (
+    <>
+      <h1 className="display-m">Try the demo</h1>
+      <p className="ui-m text-ink-2">
+        The demo makes a throwaway account for you. It is deleted after {DEMO_ACCOUNT_DAYS} days.
+      </p>
+      <DemoAccount link={link} />
+    </>
+  )
+}
+
+function EmailLogin({ link }: { link: string | string[] | undefined }) {
   const router = useRouter()
   const [failure, setFailure] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
@@ -63,7 +81,6 @@ export default function LoginPage({ searchParams }: PageProps<'/login'>) {
           Log in
         </button>
       </form>
-      <DemoAccount />
       <div className="ui-s grid gap-1 text-ink-3">
         <p>
           <Link href="/forgot-password" className="link">

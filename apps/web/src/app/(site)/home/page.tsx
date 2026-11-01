@@ -8,6 +8,7 @@ import { PlanCard } from '@/components/plan-card'
 import { RevealGroup } from '@/components/reveal-group'
 import { SourceMargin } from '@/components/source-margin'
 import { SpecimenStrip } from '@/components/specimen-strip'
+import { EMAIL_ACCOUNTS } from '@/lib/accounts'
 import { PLANS, type Plan } from '@/lib/plans'
 
 export const metadata: Metadata = {
@@ -79,8 +80,11 @@ export default function LandingPage() {
                     Make notes
                   </a>
                 ) : (
-                  <Link href="/signup" className="btn btn-secondary justify-self-start">
-                    Sign up
+                  <Link
+                    href={EMAIL_ACCOUNTS ? '/signup' : '/login'}
+                    className="btn btn-secondary justify-self-start"
+                  >
+                    {EMAIL_ACCOUNTS ? 'Sign up' : 'Try the demo'}
                   </Link>
                 )}
               </PlanCard>

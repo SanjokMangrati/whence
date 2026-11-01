@@ -3,6 +3,7 @@
 import { ArrowRight, Link as LinkIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Icon } from './icon'
+import { EMAIL_ACCOUNTS } from '@/lib/accounts'
 import { track } from '@/lib/analytics'
 import { submitWith, withLink } from '@/lib/forms'
 
@@ -11,7 +12,7 @@ export function LandingComposer() {
 
   async function submit(form: FormData) {
     track('landing_link_submitted', {})
-    router.push(withLink('/signup', String(form.get('url'))))
+    router.push(withLink(EMAIL_ACCOUNTS ? '/signup' : '/login', String(form.get('url'))))
   }
 
   return (

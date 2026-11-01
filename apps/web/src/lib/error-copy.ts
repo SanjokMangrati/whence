@@ -217,8 +217,7 @@ const AUTH_COPY: Record<string, string> = {
   EMAIL_NOT_VERIFIED: 'Confirm your email first. A new link is on its way.',
   MISSING_RESPONSE: 'The check that you are a person did not finish. Try again.',
   VERIFICATION_FAILED: 'The check that you are a person did not finish. Try again.',
-  DEMO_ACCOUNT_LIMIT:
-    'This network started its demo accounts for today. Sign up, or try again tomorrow.',
+  DEMO_ACCOUNT_LIMIT: 'This network started its demo accounts for today. Try again tomorrow.',
   ANONYMOUS_USERS_CANNOT_SIGN_IN_AGAIN_ANONYMOUSLY:
     'You are in a demo account already. Go to Home.',
 }

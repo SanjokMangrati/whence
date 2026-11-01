@@ -3,11 +3,11 @@
 import { useRouter } from 'next/navigation'
 import Script from 'next/script'
 import { useEffect, useRef, useState } from 'react'
+import { TURNSTILE_SITE_KEY } from '@/lib/accounts'
 import { identify, track } from '@/lib/analytics'
 import { authClient } from '@/lib/auth-client'
 import { authErrorCopy } from '@/lib/error-copy'
-
-const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+import { withLink } from '@/lib/forms'
 
 type WidgetId = string
 
@@ -32,13 +32,26 @@ declare global {
   }
 }
 
-export function DemoAccount({ className = '' }: { className?: string }) {
-  return SITE_KEY === undefined ? null : (
-    <DemoAccountButton siteKey={SITE_KEY} className={className} />
+interface DemoAccountProps {
+  className?: string
+  link?: string | string[]
+}
+
+export function DemoAccount({ className = '', link }: DemoAccountProps) {
+  return TURNSTILE_SITE_KEY === undefined ? null : (
+    <DemoAccountButton siteKey={TURNSTILE_SITE_KEY} className={className} link={link} />
   )
 }
 
-function DemoAccountButton({ siteKey, className }: { siteKey: string; className: string }) {
+function DemoAccountButton({
+  siteKey,
+  className,
+  link,
+}: {
+  siteKey: string
+  className: string
+  link: string | string[] | undefined
+}) {
   const router = useRouter()
   const container = useRef<HTMLDivElement>(null)
   const widget = useRef<WidgetId | null>(null)
@@ -78,7 +91,7 @@ function DemoAccountButton({ siteKey, className }: { siteKey: string; className:
     }
     identify(result.data.user.id)
     track('demo_started', {})
-    router.push('/')
+    router.push(withLink('/', link))
     router.refresh()
   }
 

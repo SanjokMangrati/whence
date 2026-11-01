@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { use, useState } from 'react'
-import { DemoAccount } from '@/components/demo-account'
 import { TextField } from '@/components/text-field'
 import { identify, track } from '@/lib/analytics'
 import { authClient, MIN_PASSWORD_LENGTH } from '@/lib/auth-client'
@@ -81,7 +80,6 @@ export default function SignupPage({ searchParams }: PageProps<'/signup'>) {
           Sign up
         </button>
       </form>
-      <DemoAccount />
       <p className="ui-s text-ink-3">
         Have an account?{' '}
         <Link href={withLink('/login', link)} className="link">
